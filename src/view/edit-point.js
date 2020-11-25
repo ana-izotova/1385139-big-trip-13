@@ -141,7 +141,7 @@ const createEditFormTemplate = (eventCard) => {
         ${photos.length === 0 ? `` : `
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`.join(``))}
+              ${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``)}
             </div>
           </div>`
 }
