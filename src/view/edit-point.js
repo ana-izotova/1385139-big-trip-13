@@ -137,7 +137,6 @@ const createEditFormTemplate = (eventCard) => {
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>
-        </section>
 
         ${photos.length === 0 ? `` : `
           <div class="event__photos-container">
@@ -146,6 +145,7 @@ const createEditFormTemplate = (eventCard) => {
             </div>
           </div>`
 }
+        </section>
       </section>
     </form>
   `;
