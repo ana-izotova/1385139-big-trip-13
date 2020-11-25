@@ -2,6 +2,10 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
+const renderTemplate = (container, content, position = `beforeend`) => {
+  container.insertAdjacentHTML(position, content);
+};
+
 const getRandomInt = (min = 0, max = 1) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
@@ -48,4 +52,4 @@ const getTripCost = (cards) => {
   }), 0);
 };
 
-export {getEventDuration, getRandomInt, getTripRoute, getTripDates, getTripCost};
+export {renderTemplate, getEventDuration, getRandomInt, getTripRoute, getTripDates, getTripCost};
