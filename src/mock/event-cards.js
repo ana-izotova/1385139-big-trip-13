@@ -150,9 +150,15 @@ const generateEventCard = () => {
 };
 
 export const generateEventCards = (amount) => {
+  let index = 0;
   return Array(amount)
     .fill()
-    .map(() => generateEventCard())
+    .map(() => {
+      index += 1;
+      const card = generateEventCard();
+      card.id = index;
+      return card;
+    })
     .sort(
         (currentCard, nextCard) => currentCard.startDate.diff(nextCard.startDate)
     );
