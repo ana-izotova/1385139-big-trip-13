@@ -26,4 +26,26 @@ const getEventDuration = (startDate, endDate) => {
     `;
 };
 
-export {getEventDuration, getRandomInt};
+const getTripRoute = (cards) => {
+  const cities = [...new Set(cards.map((card) => card.destination))];
+  return cities.length > 3 ?
+    `${cities[0]} — ... — ${cities[cities.length - 1]}` :
+    `${cities.join(` — `)}`;
+};
+
+const getTripDates = (cards) => {
+  const tripStartDate = cards[0].startDate.format(`MMM D`);
+  const tripEndDate = cards[cards.length - 1].endDate.format(`MMM D`);
+  return [tripStartDate, tripEndDate];
+};
+
+const getTripCost = (cards) => {
+  return cards.reduce(((cardsAcc, card) => {
+    const selectedOffersTotalPrice = card.offers
+      .filter((offer) => offer.checked)
+      .reduce(((offersAcc, offer) => offersAcc + offer.price), 0);
+    return selectedOffersTotalPrice + cardsAcc + card.price;
+  }), 0);
+};
+
+export {getEventDuration, getRandomInt, getTripRoute, getTripDates, getTripCost};

@@ -1,20 +1,9 @@
-import {destinations} from "../mock/event-cards.js";
+import {getTripDates, getTripRoute, getTripCost} from "./utils.js";
 
 const createTripInfoTemplate = (cards) => {
-  const tripRoute = destinations.length > 3 ?
-    `${destinations[0]} — ... — ${destinations[destinations.length - 1]}` :
-    `${destinations[0]} — ${destinations[1]} — ${destinations[2]}`;
-
-  const tripStartDate = cards[0].startDate.format(`MMM D`);
-  const tripEndDate = cards[cards.length - 1].endDate.format(`MMM D`);
-
-  const tripCost = cards.reduce(((cardsAcc, card) => {
-    const selectedOffersTotalPrice = card.offers
-      .filter((offer) => offer.checked)
-      .reduce(((offersAcc, offer) => offersAcc + offer.price), 0);
-    return selectedOffersTotalPrice + cardsAcc + card.price;
-  }), 0);
-
+  const tripRoute = getTripRoute(cards);
+  const [tripStartDate, tripEndDate] = getTripDates(cards);
+  const tripCost = getTripCost(cards);
 
   return `<section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
