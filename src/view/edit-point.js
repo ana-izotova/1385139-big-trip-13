@@ -87,8 +87,8 @@ const createEditFormTemplate = (eventCard) => {
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
             ${destinations.map((item) => {
-              return `<option value="${item}"></option>`;
-            }).join(``)}
+    return `<option value="${item}"></option>`;
+  }).join(``)}
           </datalist>
         </div>
 
@@ -120,7 +120,7 @@ const createEditFormTemplate = (eventCard) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
           ${offers.map((offer) => {
-            return `<div class="event__offer-selector">
+    return `<div class="event__offer-selector">
                       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${id}" type="checkbox" name="event-offer-${offer.type}" ${offer.checked ? `checked` : ``}>
                       <label class="event__offer-label" for="event-offer-${offer.type}-${id}">
                         <span class="event__offer-title">${offer.name}</span>
@@ -128,11 +128,11 @@ const createEditFormTemplate = (eventCard) => {
                         <span class="event__offer-price">${offer.price}</span>
                       </label>
                     </div>`;
-            }).join(``)
-          }
+  }).join(``)
+}
           </div>
           </section>`
-        }
+}
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -142,13 +142,10 @@ const createEditFormTemplate = (eventCard) => {
         ${photos.length === 0 ? `` : `
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${photos.map((photo) => {
-                return `<img class="event__photo" src="${photo}" alt="Event photo">`;
-                }).join(``)
-              }
+              ${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`.join(``))}
             </div>
           </div>`
-         }
+}
       </section>
     </form>
   `;
