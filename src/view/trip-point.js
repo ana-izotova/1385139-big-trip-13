@@ -1,7 +1,7 @@
-import {getEventDuration} from "./utils.js";
+import {getEventDuration, createElement} from "./utils.js";
 
-const createTripPointTemplate = (eventCard) => {
-  const {startDate, endDate, type, destination, offers, price, favourite} = eventCard;
+const createTripPointTemplate = (tripCard) => {
+  const {startDate, endDate, type, destination, offers, price, favourite} = tripCard;
 
   return `
     <li class="trip-events__item">
@@ -46,4 +46,27 @@ const createTripPointTemplate = (eventCard) => {
     </li>`;
 };
 
-export {createTripPointTemplate};
+class TripPoint {
+  constructor(tripCard) {
+    this._data = tripCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripPointTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default TripPoint;
