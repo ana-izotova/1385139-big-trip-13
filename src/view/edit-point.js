@@ -1,7 +1,8 @@
 import {destinations} from "../mock/event-cards.js";
+import {createElement} from "./utils.js";
 
-const createEditFormTemplate = (eventCard) => {
-  const {type, startDate, endDate, destination, offers, description, photos, price, id} = eventCard;
+const createEditFormTemplate = (tripCard) => {
+  const {type, startDate, endDate, destination, offers, description, photos, price, id} = tripCard;
 
   return `
     <form class="event event--edit" action="#" method="post">
@@ -151,4 +152,27 @@ const createEditFormTemplate = (eventCard) => {
   `;
 };
 
-export {createEditFormTemplate};
+class EditPoint {
+  constructor(tripCard) {
+    this._data = tripCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditFormTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default EditPoint;
