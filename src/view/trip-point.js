@@ -3,8 +3,7 @@ import {getEventDuration, createElement} from "./utils.js";
 const createTripPointTemplate = (tripCard) => {
   const {startDate, endDate, type, destination, offers, price, favourite} = tripCard;
 
-  return `
-    <li class="trip-events__item">
+  return `<li class="trip-events__item">
       <div class="event">
         <time class="event__date" datetime="${startDate.format(`YYYY-MM-DD`)}">${startDate.format(`MMM D`)}</time>
         <div class="event__type">
