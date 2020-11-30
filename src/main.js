@@ -22,6 +22,7 @@ const renderTripPoint = (tripListElement, tripCard) => {
       .addEventListener(`click`, replaceEditFormToTripCard);
 
     editTripElement
+      .querySelector(`form`)
       .addEventListener(`submit`, (evt) => {
         evt.preventDefault();
         replaceEditFormToTripCard();

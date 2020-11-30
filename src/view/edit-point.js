@@ -4,7 +4,8 @@ import {createElement} from "./utils.js";
 const createEditFormTemplate = (tripCard) => {
   const {type, startDate, endDate, destination, offers, description, photos, price, id} = tripCard;
 
-  return `<form class="event event--edit" action="#" method="post">
+  return `<li class="trip-events__item">
+    <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
@@ -147,7 +148,8 @@ const createEditFormTemplate = (tripCard) => {
 }
         </section>
       </section>
-    </form>`;
+    </form>
+  </li>`;
 };
 
 class EditPoint {
