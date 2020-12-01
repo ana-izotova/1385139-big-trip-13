@@ -1,16 +1,16 @@
 import {createElement} from "./utils.js";
 
-const createTripListTemplate = () => {
-  return `<ul class="trip-events__list"></ul>`;
+const createLoadingTemplate = () => {
+  return `<p class="trip-events__msg">Loading...</p>`;
 };
 
-class TripList {
+class Loading {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createTripListTemplate();
+    return createLoadingTemplate();
   }
 
   getElement() {
@@ -26,4 +26,4 @@ class TripList {
   }
 }
 
-export default TripList;
+export default Loading;

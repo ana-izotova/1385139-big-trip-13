@@ -1,7 +1,8 @@
 import {destinations} from "../mock/event-cards.js";
+import {createElement} from "./utils.js";
 
-const createNewPointTemplate = (emptyEventCard) => {
-  const {type, startDate, endDate, destination, offers, description, photos, price, id} = emptyEventCard;
+const createNewPointTemplate = (emptyTripCard) => {
+  const {type, startDate, endDate, destination, offers, description, photos, price, id} = emptyTripCard;
 
   return `
     <form class="event event--edit" action="#" method="post">
@@ -147,4 +148,27 @@ const createNewPointTemplate = (emptyEventCard) => {
     </form>`;
 };
 
-export {createNewPointTemplate};
+class NewPoint {
+  constructor(emptyTripCard) {
+    this._data = emptyTripCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createNewPointTemplate(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default NewPoint;
