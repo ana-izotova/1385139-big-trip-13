@@ -9,11 +9,18 @@ import EditPointView from "./view/edit-point.js";
 import TripListEmptyView from "./view/trip-list-empty.js";
 import {cards} from "./mock/event-cards.js";
 
+const pageHeader = document.querySelector(`.page-header`);
+const tripMainElement = pageHeader.querySelector(`.trip-main`);
+const tripControlsElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
+const pageMain = document.querySelector(`.page-body__page-main`);
+const tripEventsSection = pageMain.querySelector(`.trip-events`);
+
 const renderTripPoint = (tripListElement, tripCard) => {
   const tripComponent = new TripPointView(tripCard);
   const editTripComponent = new EditPointView(tripCard);
 
-  const replaceTripCardToEditForm = () => {
+  const replaceTripCardToEditForm = (evt) => {
+    evt.preventDefault();
     tripListElement.replaceChild(editTripComponent.getElement(), tripComponent.getElement());
     const editTripElement = editTripComponent.getElement();
 
@@ -23,53 +30,50 @@ const renderTripPoint = (tripListElement, tripCard) => {
 
     editTripElement
       .querySelector(`form`)
-      .addEventListener(`submit`, (evt) => {
-        evt.preventDefault();
-        replaceEditFormToTripCard();
-      });
+      .addEventListener(`submit`, replaceEditFormToTripCard);
+
+    document.addEventListener(`keydown`, onEscKeyDown);
+    tripComponent.getElement().removeEventListener(`click`, replaceTripCardToEditForm);
   };
 
-  const replaceEditFormToTripCard = () => {
+  const replaceEditFormToTripCard = (evt) => {
+    evt.preventDefault();
     tripListElement.replaceChild(tripComponent.getElement(), editTripComponent.getElement());
     document.removeEventListener(`keydown`, onEscKeyDown);
+    tripComponent.getElement().removeEventListener(`click`, replaceEditFormToTripCard);
   };
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      replaceEditFormToTripCard();
+      replaceEditFormToTripCard(evt);
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
 
   tripComponent.getElement()
     .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
-      replaceTripCardToEditForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
+    .addEventListener(`click`, replaceTripCardToEditForm);
 
   render(tripListElement, tripComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-const pageHeader = document.querySelector(`.page-header`);
-const tripMainElement = pageHeader.querySelector(`.trip-main`);
-const tripControlsElement = tripMainElement.querySelector(`.trip-main__trip-controls`);
-const pageMain = document.querySelector(`.page-body__page-main`);
-const tripEventsSection = pageMain.querySelector(`.trip-events`);
+const renderTripRouteBoard = (tripCards) => {
+  render(tripControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripControlsElement, new FiltersView().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsSection, new SortingView().getElement(), RenderPosition.BEFOREEND);
 
-render(tripControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
-render(tripControlsElement, new FiltersView().getElement(), RenderPosition.BEFOREEND);
-render(tripEventsSection, new SortingView().getElement(), RenderPosition.BEFOREEND);
+  const tripListComponent = new TripListView();
+  render(tripEventsSection, tripListComponent.getElement(), RenderPosition.BEFOREEND);
 
-const tripListComponent = new TripListView();
-render(tripEventsSection, tripListComponent.getElement(), RenderPosition.BEFOREEND);
+  if (cards.length === 0) {
+    render(tripEventsSection, new TripListEmptyView().getElement(), RenderPosition.BEFOREEND);
+  } else {
+    render(tripMainElement, new TripInfoView(cards).getElement(), RenderPosition.AFTERBEGIN);
+    tripCards.forEach((card) => {
+      renderTripPoint(tripListComponent.getElement(), card);
+    });
+  }
+};
 
-if (cards.length === 0) {
-  render(tripEventsSection, new TripListEmptyView().getElement(), RenderPosition.BEFOREEND);
-} else {
-  render(tripMainElement, new TripInfoView(cards).getElement(), RenderPosition.AFTERBEGIN);
-  cards.map((card) => {
-    renderTripPoint(tripListComponent.getElement(), card);
-  });
-}
+renderTripRouteBoard(cards);
