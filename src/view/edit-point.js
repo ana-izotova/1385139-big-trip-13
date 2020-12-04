@@ -1,5 +1,5 @@
 import {destinations} from "../mock/event-cards.js";
-import {createElement} from "./utils.js";
+import AbstractView from "./abstract.js";
 
 const createEditFormTemplate = (tripCard) => {
   const {type, startDate, endDate, destination, offers, description, photos, price, id} = tripCard;
@@ -152,26 +152,40 @@ const createEditFormTemplate = (tripCard) => {
   </li>`;
 };
 
-class EditPoint {
+class EditPoint extends AbstractView {
   constructor(tripCard) {
+    super();
     this._data = tripCard;
-    this._element = null;
+
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._closeEditFormHandler = this._closeEditFormHandler.bind(this);
   }
 
   getTemplate() {
     return createEditFormTemplate(this._data);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  _closeEditFormHandler() {
+    this._callback.closeEditForm();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement()
+      .querySelector(`form`)
+      .addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setEditFormCloseHandler(callback) {
+    this._callback.closeEditForm = callback;
+    this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._closeEditFormHandler);
   }
 }
 

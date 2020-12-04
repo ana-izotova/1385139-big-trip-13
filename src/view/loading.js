@@ -1,28 +1,12 @@
-import {createElement} from "./utils.js";
+import AbstractView from "./abstract.js";
 
 const createLoadingTemplate = () => {
   return `<p class="trip-events__msg">Loading...</p>`;
 };
 
-class Loading {
-  constructor() {
-    this._element = null;
-  }
-
+class Loading extends AbstractView {
   getTemplate() {
     return createLoadingTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
