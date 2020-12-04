@@ -19,41 +19,38 @@ const renderTripPoint = (tripListElement, tripCard) => {
   const tripComponent = new TripPointView(tripCard);
   const editTripComponent = new EditPointView(tripCard);
 
-  const replaceTripCardToEditForm = (evt) => {
-    evt.preventDefault();
+  const replaceTripToForm = () => {
     tripListElement.replaceChild(editTripComponent.getElement(), tripComponent.getElement());
-    const editTripElement = editTripComponent.getElement();
-
-    editTripElement
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, replaceEditFormToTripCard);
-
-    editTripElement
-      .querySelector(`form`)
-      .addEventListener(`submit`, replaceEditFormToTripCard);
-
-    document.addEventListener(`keydown`, onEscKeyDown);
-    tripComponent.getElement().removeEventListener(`click`, replaceTripCardToEditForm);
   };
 
-  const replaceEditFormToTripCard = (evt) => {
-    evt.preventDefault();
+  const replaceFormToCard = () => {
     tripListElement.replaceChild(tripComponent.getElement(), editTripComponent.getElement());
-    document.removeEventListener(`keydown`, onEscKeyDown);
-    tripComponent.getElement().removeEventListener(`click`, replaceEditFormToTripCard);
   };
+
+  tripComponent.setEditClickHandler(() => {
+    if (!tripListElement.querySelector(`form`)) {
+      replaceTripToForm();
+      document.addEventListener(`keydown`, onEscKeyDown);
+    }
+  });
+
+  editTripComponent.setFormSubmitHandler(() => {
+    replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  editTripComponent.setEditFormCloseHandler(() => {
+    replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      replaceEditFormToTripCard(evt);
+      replaceFormToCard();
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
-
-  tripComponent.getElement()
-    .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, replaceTripCardToEditForm);
 
   render(tripListElement, tripComponent.getElement(), RenderPosition.BEFOREEND);
 };
