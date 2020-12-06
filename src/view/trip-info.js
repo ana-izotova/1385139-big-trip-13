@@ -1,4 +1,4 @@
-import {getTripDates, getTripRoute, getTripCost} from "./utils.js";
+import {getTripDates, getTripRoute, getTripCost} from "../utils/trip.js";
 import AbstractView from "./abstract.js";
 
 const createTripInfoTemplate = (tripCards) => {

@@ -1,4 +1,4 @@
-import {getEventDuration} from "./utils.js";
+import {getEventDuration} from "../utils/trip.js";
 import AbstractView from "./abstract.js";
 
 const createTripPointTemplate = (tripCard) => {

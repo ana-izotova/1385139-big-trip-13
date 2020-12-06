@@ -2,36 +2,6 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
-const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
-const render = (container, element, position) => {
-  switch (position) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};
-
-const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
-const getRandomInt = (min = 0, max = 1) => {
-  const lower = Math.ceil(Math.min(min, max));
-  const upper = Math.floor(Math.max(min, max));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
 const addZeroToNumber = (number) => {
   return (number < 10 ? `0${number}` : number);
 };
@@ -71,4 +41,4 @@ const getTripCost = (cards) => {
   }), 0);
 };
 
-export {RenderPosition, render, createElement, getEventDuration, getRandomInt, getTripRoute, getTripDates, getTripCost};
+export {getEventDuration, getTripRoute, getTripDates, getTripCost};
