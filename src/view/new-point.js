@@ -1,5 +1,5 @@
 import {destinations} from "../mock/event-cards.js";
-import {createElement} from "./utils.js";
+import AbstractView from "./abstract.js";
 
 const createNewPointTemplate = (emptyTripCard) => {
   const {type, startDate, endDate, destination, offers, description, photos, price, id} = emptyTripCard;
@@ -148,26 +148,14 @@ const createNewPointTemplate = (emptyTripCard) => {
     </form>`;
 };
 
-class NewPoint {
+class NewPoint extends AbstractView {
   constructor(emptyTripCard) {
+    super();
     this._data = emptyTripCard;
-    this._element = null;
   }
 
   getTemplate() {
     return createNewPointTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

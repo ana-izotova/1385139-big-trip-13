@@ -1,4 +1,4 @@
-import {render, RenderPosition} from "./view/utils.js";
+import {render, RenderPosition, replace} from "./utils/render";
 import TripInfoView from "./view/trip-info.js";
 import MenuView from "./view/menu.js";
 import FiltersView from "./view/filters.js";
@@ -19,57 +19,54 @@ const renderTripPoint = (tripListElement, tripCard) => {
   const tripComponent = new TripPointView(tripCard);
   const editTripComponent = new EditPointView(tripCard);
 
-  const replaceTripCardToEditForm = (evt) => {
-    evt.preventDefault();
-    tripListElement.replaceChild(editTripComponent.getElement(), tripComponent.getElement());
-    const editTripElement = editTripComponent.getElement();
-
-    editTripElement
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, replaceEditFormToTripCard);
-
-    editTripElement
-      .querySelector(`form`)
-      .addEventListener(`submit`, replaceEditFormToTripCard);
-
-    document.addEventListener(`keydown`, onEscKeyDown);
-    tripComponent.getElement().removeEventListener(`click`, replaceTripCardToEditForm);
+  const replaceTripToForm = () => {
+    replace(editTripComponent, tripComponent);
   };
 
-  const replaceEditFormToTripCard = (evt) => {
-    evt.preventDefault();
-    tripListElement.replaceChild(tripComponent.getElement(), editTripComponent.getElement());
+  const replaceFormToCard = () => {
+    replace(tripComponent, editTripComponent);
+  };
+
+  tripComponent.setEditClickHandler(() => {
+    if (!tripListElement.querySelector(`form`)) {
+      replaceTripToForm();
+      document.addEventListener(`keydown`, onEscKeyDown);
+    }
+  });
+
+  editTripComponent.setFormSubmitHandler(() => {
+    replaceFormToCard();
     document.removeEventListener(`keydown`, onEscKeyDown);
-    tripComponent.getElement().removeEventListener(`click`, replaceEditFormToTripCard);
-  };
+  });
+
+  editTripComponent.setEditFormCloseHandler(() => {
+    replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      replaceEditFormToTripCard(evt);
+      replaceFormToCard();
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
-
-  tripComponent.getElement()
-    .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, replaceTripCardToEditForm);
 
   render(tripListElement, tripComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 const renderTripRouteBoard = (tripCards) => {
-  render(tripControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
-  render(tripControlsElement, new FiltersView().getElement(), RenderPosition.BEFOREEND);
-  render(tripEventsSection, new SortingView().getElement(), RenderPosition.BEFOREEND);
+  render(tripControlsElement, new MenuView(), RenderPosition.AFTERBEGIN);
+  render(tripControlsElement, new FiltersView(), RenderPosition.BEFOREEND);
+  render(tripEventsSection, new SortingView(), RenderPosition.BEFOREEND);
 
   const tripListComponent = new TripListView();
-  render(tripEventsSection, tripListComponent.getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsSection, tripListComponent, RenderPosition.BEFOREEND);
 
   if (cards.length === 0) {
-    render(tripEventsSection, new TripListEmptyView().getElement(), RenderPosition.BEFOREEND);
+    render(tripEventsSection, new TripListEmptyView(), RenderPosition.BEFOREEND);
   } else {
-    render(tripMainElement, new TripInfoView(cards).getElement(), RenderPosition.AFTERBEGIN);
+    render(tripMainElement, new TripInfoView(cards), RenderPosition.AFTERBEGIN);
     tripCards.forEach((card) => {
       renderTripPoint(tripListComponent.getElement(), card);
     });

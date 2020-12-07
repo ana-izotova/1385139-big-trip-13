@@ -1,4 +1,5 @@
-import {getTripDates, getTripRoute, getTripCost, createElement} from "./utils.js";
+import {getTripDates, getTripRoute, getTripCost} from "../utils/trip.js";
+import AbstractView from "./abstract.js";
 
 const createTripInfoTemplate = (tripCards) => {
   const tripRoute = getTripRoute(tripCards);
@@ -18,26 +19,14 @@ const createTripInfoTemplate = (tripCards) => {
           </section>`;
 };
 
-class TripInfo {
+class TripInfo extends AbstractView {
   constructor(tripCards) {
+    super();
     this._data = tripCards;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._data);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

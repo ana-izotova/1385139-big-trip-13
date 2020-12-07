@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInt} from "../view/utils.js";
+import {getRandomInt} from "../utils/common.js";
 
 const MAX_OFFERS_AMOUNT = 5;
 const MAX_TRIP_TIME = 7;
