@@ -23,6 +23,7 @@ class TripRoute {
     this._filtersComponent = new FiltersView();
 
     this._handleTripChange = this._handleTripChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(tripCards) {
@@ -35,7 +36,7 @@ class TripRoute {
   }
 
   _renderTripPoint(tripCard) {
-    const tripPresenter = new TripPointPresenter(this._tripListComponent, this._handleTripChange);
+    const tripPresenter = new TripPointPresenter(this._tripListComponent, this._handleTripChange, this._handleModeChange);
     tripPresenter.init(tripCard);
     this._tripPresenter[tripCard.id] = tripPresenter;
   }
@@ -68,6 +69,12 @@ class TripRoute {
   _handleTripChange(updatedTrip) {
     this._tripCards = updateItem(this._tripCards, updatedTrip);
     this._tripPresenter[updatedTrip.id].init(updatedTrip);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._tripPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _clearTripList() {

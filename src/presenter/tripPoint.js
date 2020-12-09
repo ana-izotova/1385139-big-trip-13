@@ -2,13 +2,20 @@ import TripPointView from "../view/trip-point.js";
 import EditPointView from "../view/edit-point.js";
 import {remove, render, RenderPosition, replace} from "../utils/render.js";
 
+const Mode = {
+  DEFAULT: `DEFAULT`,
+  EDITING: `EDITING`
+};
+
 class TripPoint {
-  constructor(tripListContainer, changeData) {
+  constructor(tripListContainer, changeData, changeMode) {
     this._tripListContainer = tripListContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._tripComponent = null;
     this._tripEditComponent = null;
+    this._mode = Mode.DEFAULT;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
@@ -36,11 +43,11 @@ class TripPoint {
       return;
     }
 
-    if (this._tripListContainer.getElement().contains(prevTripComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._tripComponent, prevTripComponent);
     }
 
-    if (this._tripListContainer.getElement().contains(prevTripEditComponent.getElement())) {
+    if (this._mode === Mode.EDITING) {
       replace(this._tripEditComponent, prevTripEditComponent);
     }
 
@@ -53,14 +60,23 @@ class TripPoint {
     remove(this._tripEditComponent);
   }
 
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToCard();
+    }
+  }
+
   _replaceTripToForm() {
     replace(this._tripEditComponent, this._tripComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToCard() {
     replace(this._tripComponent, this._tripEditComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
   }
 
   _escKeyDownHandler(evt) {
