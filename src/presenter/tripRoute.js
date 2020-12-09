@@ -4,7 +4,9 @@ import EmptyTripListView from "../view/trip-list-empty.js";
 import TripInfoView from "../view/trip-info";
 import MenuView from "../view/menu.js";
 import FiltersView from "../view/filters.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import TripPointPresenter from "./tripPoint.js";
+import {render, RenderPosition} from "../utils/render.js";
+import {updateItem} from "../utils/common.js";
 
 class TripRoute {
   constructor(tripEventsContainer, tripInfoMainContainer, tripControlsContainer) {
@@ -12,11 +14,15 @@ class TripRoute {
     this._tripInfoMainContainer = tripInfoMainContainer;
     this._tripControlsContainer = tripControlsContainer;
 
+    this._tripPresenter = {};
+
     this._tripListComponent = new TripListView();
     this._sortingComponent = new SortingView();
     this._emptyTripListComponent = new EmptyTripListView();
     this._menuComponent = new MenuView();
     this._filtersComponent = new FiltersView();
+
+    this._handleTripChange = this._handleTripChange.bind(this);
   }
 
   init(tripCards) {
@@ -29,9 +35,9 @@ class TripRoute {
   }
 
   _renderTripPoint(tripCard) {
-
-
-
+    const tripPresenter = new TripPointPresenter(this._tripListComponent, this._handleTripChange);
+    tripPresenter.init(tripCard);
+    this._tripPresenter[tripCard.id] = tripPresenter;
   }
 
   _renderTripPoints() {
@@ -57,6 +63,18 @@ class TripRoute {
 
   _renderEmptyTripList() {
     render(this._tripEventsContainer, this._emptyTripListComponent, RenderPosition.BEFOREEND);
+  }
+
+  _handleTripChange(updatedTrip) {
+    this._tripCards = updateItem(this._tripCards, updatedTrip);
+    this._tripPresenter[updatedTrip.id].init(updatedTrip);
+  }
+
+  _clearTripList() {
+    Object
+      .values(this._tripPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._tripPresenter = {};
   }
 
   _renderTripRoute() {
