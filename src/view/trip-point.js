@@ -1,8 +1,9 @@
-import {getEventDuration} from "../utils/trip.js";
+import {getEventDuration, humanizeEventDuration} from "../utils/trip.js";
 import AbstractView from "./abstract.js";
 
 const createTripPointTemplate = (tripCard) => {
   const {startDate, endDate, type, destination, offers, price, favourite} = tripCard;
+  const eventDuration = getEventDuration(startDate, endDate);
 
   return `<li class="trip-events__item">
       <div class="event">
@@ -17,7 +18,7 @@ const createTripPointTemplate = (tripCard) => {
             &mdash;
             <time class="event__end-time" datetime="${endDate.format(`YYYY-MM-DDTHH:mm`)}">${endDate.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${getEventDuration(startDate, endDate)}</p>
+          <p class="event__duration">${humanizeEventDuration(eventDuration)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
