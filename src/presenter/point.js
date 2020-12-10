@@ -7,7 +7,7 @@ const Mode = {
   EDITING: `EDITING`
 };
 
-class TripPoint {
+class Point {
   constructor(tripListContainer, changeData, changeMode) {
     this._tripListContainer = tripListContainer;
     this._changeData = changeData;
@@ -112,4 +112,4 @@ class TripPoint {
   }
 }
 
-export default TripPoint;
+export default Point;

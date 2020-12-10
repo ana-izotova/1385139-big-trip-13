@@ -1,11 +1,11 @@
 import SortingView from "../view/sorting.js";
 import TripListView from "../view/trip-list.js";
 import EmptyTripListView from "../view/trip-list-empty.js";
-import TripPointPresenter from "./trip-point.js";
+import TripPointPresenter from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {updateItem} from "../utils/common.js";
 
-class TripRoute {
+class Trip {
   constructor(tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
 
@@ -75,4 +75,4 @@ class TripRoute {
   }
 }
 
-export default TripRoute;
+export default Trip;
