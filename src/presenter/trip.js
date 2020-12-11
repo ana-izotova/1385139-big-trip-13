@@ -42,14 +42,6 @@ class Trip {
     }
 
     this._currentSortType = sortType;
-
-    const currentLabel = this._sortingComponent
-      .getElement()
-      .querySelector(`label[data-sort-type=${this._currentSortType}]`);
-    this._sortingComponent
-      .getElement()
-      .querySelector(`input[id=${currentLabel.htmlFor}]`)
-      .setAttribute(`checked`, `true`);
   }
 
   _handleSortTypeChange(sortType) {
