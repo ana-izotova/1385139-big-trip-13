@@ -7,11 +7,14 @@ const addZeroToNumber = (number) => {
 };
 
 const getEventDuration = (startDate, endDate) => {
-  const diffInMs = endDate.diff(startDate);
-  const timeDuration = dayjs.duration(diffInMs);
-  const days = timeDuration.days();
-  const hours = timeDuration.hours();
-  const minutes = timeDuration.minutes();
+  return endDate.diff(startDate);
+};
+
+const humanizeEventDuration = (timeDiff) => {
+  const eventDuration = dayjs.duration(timeDiff);
+  const days = eventDuration.days();
+  const hours = eventDuration.hours();
+  const minutes = eventDuration.minutes();
   return `
       ${(days > 0 && addZeroToNumber(days) + `D`) || ``}
       ${((days > 0 || hours > 0) && addZeroToNumber(hours) + `H`) || ``}
@@ -41,4 +44,14 @@ const getTripCost = (cards) => {
   }), 0);
 };
 
-export {getEventDuration, getTripRoute, getTripDates, getTripCost};
+const sortTripCardsByPrice = (tripCard1, tripCard2) => {
+  return tripCard2.price - tripCard1.price;
+};
+
+const sortTripCardsByDuration = (tripCard1, tripCard2) => {
+  const time1 = getEventDuration(tripCard1.startDate, tripCard1.endDate);
+  const time2 = getEventDuration(tripCard2.startDate, tripCard2.endDate);
+  return time2 - time1;
+};
+
+export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, sortTripCardsByPrice, sortTripCardsByDuration};

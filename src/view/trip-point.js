@@ -1,8 +1,9 @@
-import {getEventDuration} from "../utils/trip.js";
+import {getEventDuration, humanizeEventDuration} from "../utils/trip.js";
 import AbstractView from "./abstract.js";
 
 const createTripPointTemplate = (tripCard) => {
   const {startDate, endDate, type, destination, offers, price, favourite} = tripCard;
+  const eventDuration = getEventDuration(startDate, endDate);
 
   return `<li class="trip-events__item">
       <div class="event">
@@ -17,7 +18,7 @@ const createTripPointTemplate = (tripCard) => {
             &mdash;
             <time class="event__end-time" datetime="${endDate.format(`YYYY-MM-DDTHH:mm`)}">${endDate.format(`HH:mm`)}</time>
           </p>
-          <p class="event__duration">${getEventDuration(startDate, endDate)}</p>
+          <p class="event__duration">${humanizeEventDuration(eventDuration)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${price}</span>
@@ -52,6 +53,7 @@ class TripPoint extends AbstractView {
     this._data = tripCard;
 
     this._editClickHandler = this._editClickHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -63,11 +65,23 @@ class TripPoint extends AbstractView {
     this._callback.editClick();
   }
 
+  _favouriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favouriteClick();
+  }
+
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
     this.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, this._editClickHandler);
+  }
+
+  setFavouriteClickHandler(callback) {
+    this._callback.favouriteClick = callback;
+    this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._favouriteClickHandler);
   }
 }
 
