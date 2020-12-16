@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import {getRandomInt} from "../utils/common.js";
 
-const MAX_OFFERS_AMOUNT = 5;
 const MAX_TRIP_TIME = 7;
 const MAX_PHOTOS_AMOUNT = 5;
 const CARDS_AMOUNT = 20;
@@ -214,6 +213,6 @@ const emptyCard = {
   price: 0,
   isFavourite: false,
   id: generateId()
-}
+};
 
 export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard};
