@@ -11,80 +11,6 @@ const Price = {
   max: 100
 };
 
-const offers = [
-  {
-    name: `Add luggage`,
-    type: `luggage`,
-    category: [`train`, `bus`, `flight`],
-    price: 50,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Add meal`,
-    type: `meal`,
-    category: [`train`, `flight`],
-    price: 15,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Switch to comfort`,
-    type: `comfort`,
-    category: [`train`, `flight`],
-    price: 80,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Choose seats`,
-    type: `seats`,
-    category: [`train`, `bus`, `flight`],
-    price: 15,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Order Uber`,
-    type: `taxi`,
-    category: `taxi`,
-    price: 20,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Rent a car`,
-    type: `car`,
-    category: `drive`,
-    price: 200,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Add breakfast`,
-    type: `breakfast`,
-    category: `check-in`,
-    price: 50,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Book tickets`,
-    type: `tickets`,
-    category: `sightseeing`,
-    price: 40,
-    checked: Boolean(getRandomInt())
-  },
-  {
-    name: `Lunch in city`,
-    type: `lunch`,
-    category: `sightseeing`,
-    price: 30,
-    checked: Boolean(getRandomInt())
-  }
-];
-
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i -= 1) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
 const text = [
   `Cat ipsum dolor sit amet, skid on floor, crash into wall but crusty butthole yet jump on human and sleep on her all night long be long in the bed, purr in the morning and then give a bite to every human around for not waking up request food, purr loud scratch the walls, the floor, the windows, the humans.`,
   `Stick butt in face run up and down stairs and cat sit like bread, meow loudly just to annoy owners.`,
@@ -96,7 +22,13 @@ const text = [
   `Loves cheeseburgers more napping, more napping all the napping is exhausting cat playing a fiddle in hey diddle diddle? so lick arm hair so i like big cats and i can not lie or meeeeouw.`
 ];
 
-const destinations = [`Amsterdam`, `Geneva`, `Chamonix`, `Monaco`];
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 
 const getRandomPhoto = () => `http://picsum.photos/248/152?r=${Math.random()}`;
 
@@ -108,6 +40,100 @@ const generateDescription = (content) => {
 
 const getRandomArrayItem = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)];
+};
+
+const getRandomProperty = (obj) => {
+  const keys = Object.keys(obj);
+  return obj[keys[getRandomInt(0, keys.length - 1)]];
+};
+
+const destinations = {
+  Amsterdam: {
+    name: `Amsterdam`,
+    description: generateDescription(text),
+    photos: Array(getRandomInt(0, MAX_PHOTOS_AMOUNT)).fill().map(getRandomPhoto)
+  },
+  Geneva: {
+    name: `Geneva`,
+    description: generateDescription(text),
+    photos: Array(getRandomInt(0, MAX_PHOTOS_AMOUNT)).fill().map(getRandomPhoto)
+  },
+  Chamonix: {
+    name: `Chamonix`,
+    description: generateDescription(text),
+    photos: Array(getRandomInt(0, MAX_PHOTOS_AMOUNT)).fill().map(getRandomPhoto)
+  },
+  Monaco: {
+    name: `Monaco`,
+    description: generateDescription(text),
+    photos: Array(getRandomInt(0, MAX_PHOTOS_AMOUNT)).fill().map(getRandomPhoto)
+  }
+};
+
+const AllOffers = {
+  luggage: {
+    name: `Add luggage`,
+    type: `luggage`,
+    category: [`train`, `bus`, `flight`],
+    price: 50,
+    checked: Boolean(getRandomInt())
+  },
+  meal: {
+    name: `Add meal`,
+    type: `meal`,
+    category: [`train`, `flight`],
+    price: 15,
+    checked: Boolean(getRandomInt())
+  },
+  comfort: {
+    name: `Switch to comfort`,
+    type: `comfort`,
+    category: [`train`, `flight`],
+    price: 80,
+    checked: Boolean(getRandomInt())
+  },
+  seats: {
+    name: `Choose seats`,
+    type: `seats`,
+    category: [`train`, `bus`, `flight`],
+    price: 15,
+    checked: Boolean(getRandomInt())
+  },
+  taxi: {
+    name: `Order Uber`,
+    type: `taxi`,
+    category: `taxi`,
+    price: 20,
+    checked: Boolean(getRandomInt())
+  },
+  car: {
+    name: `Rent a car`,
+    type: `car`,
+    category: `drive`,
+    price: 200,
+    checked: Boolean(getRandomInt())
+  },
+  breakfast: {
+    name: `Add breakfast`,
+    type: `breakfast`,
+    category: `check-in`,
+    price: 50,
+    checked: Boolean(getRandomInt())
+  },
+  tickets: {
+    name: `Book tickets`,
+    type: `tickets`,
+    category: `sightseeing`,
+    price: 40,
+    checked: Boolean(getRandomInt())
+  },
+  lunch: {
+    name: `Lunch in city`,
+    type: `lunch`,
+    category: `sightseeing`,
+    price: 30,
+    checked: Boolean(getRandomInt())
+  }
 };
 
 const types = [
@@ -131,19 +157,28 @@ export const generateDate = () => {
   return [start, end];
 };
 
+const getAvailaibleOffers = (eventType) => {
+  const result = {};
+  for (const [offerType, offer] of Object.entries(AllOffers)) {
+    if (offer.category.includes(eventType)) {
+      result[offerType] = offer;
+    }
+  }
+  return result;
+};
+
 const generateEventCard = () => {
   const [startDate, endDate] = generateDate();
   const type = getRandomArrayItem(types);
+  const destination = getRandomProperty(destinations);
   return {
     type,
-    destination: getRandomArrayItem(destinations),
+    destination: destination.name,
     startDate,
     endDate,
-    offers: shuffleArray(offers.filter((offer) => offer.category.includes(type))).slice(0, getRandomInt(0, MAX_OFFERS_AMOUNT)),
-    photos: Array(getRandomInt(0, MAX_PHOTOS_AMOUNT))
-      .fill()
-      .map(getRandomPhoto),
-    description: generateDescription(text),
+    offers: getAvailaibleOffers(type),
+    photos: destination.photos,
+    description: destination.description,
     price: getRandomInt(Price.min, Price.max),
     favourite: Boolean(getRandomInt())
   };
@@ -166,4 +201,19 @@ export const generateEventCards = (amount) => {
 
 const cards = generateEventCards(CARDS_AMOUNT);
 
-export {offers, destinations, cards};
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+const emptyCard = {
+  type: `taxi`,
+  destination: ``,
+  startDate: dayjs(),
+  endDate: dayjs(),
+  offers: {},
+  photos: [],
+  description: ``,
+  price: 0,
+  isFavourite: false,
+  id: generateId()
+}
+
+export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard};
