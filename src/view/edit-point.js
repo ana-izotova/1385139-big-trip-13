@@ -1,5 +1,5 @@
-import {destinations} from "../mock/event-cards.js";
-import AbstractView from "./abstract.js";
+import {destinations, getAvailaibleOffers, emptyCard} from "../mock/event-cards.js";
+import SmartView from "./smart.js";
 
 const createEditFormTemplate = (tripCard) => {
   const {type, startDate, endDate, destination, offers, description, photos, price, id} = tripCard;
@@ -87,8 +87,8 @@ const createEditFormTemplate = (tripCard) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
-            ${destinations.map((item) => {
-    return `<option value="${item}"></option>`;
+            ${Object.keys(destinations).map((item) => {
+    return `<option value="${destinations[item].name}"></option>`;
   }).join(``)}
           </datalist>
         </div>
@@ -116,11 +116,11 @@ const createEditFormTemplate = (tripCard) => {
         </button>
       </header>
       <section class="event__details">
-        ${offers.length === 0 ? `` : `
+        ${Object.keys(offers).length === 0 ? `` : `
           <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-          ${offers.map((offer) => {
+          ${Object.values(offers).map((offer) => {
     return `<div class="event__offer-selector">
                       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.type}-${id}" type="checkbox" name="event-offer-${offer.type}" ${offer.checked ? `checked` : ``}>
                       <label class="event__offer-label" for="event-offer-${offer.type}-${id}">
@@ -152,26 +152,124 @@ const createEditFormTemplate = (tripCard) => {
   </li>`;
 };
 
-class EditPoint extends AbstractView {
-  constructor(tripCard) {
+class EditPoint extends SmartView {
+  constructor(tripCard = emptyCard) {
     super();
-    this._data = tripCard;
+    this._data = EditPoint.parseTripCardToData(tripCard);
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._closeEditFormHandler = this._closeEditFormHandler.bind(this);
+    this._eventTypeSelectHandler = this._eventTypeSelectHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._offersClickHandler = this._offersClickHandler.bind(this);
+
+    this._setInnerHandlers();
+  }
+
+  static parseTripCardToData(tripCard) {
+    return Object.assign({}, tripCard);
+  }
+
+  static parseDataToTripCard(data) {
+    return Object.assign({}, data);
+  }
+
+  reset(tripCard) {
+    this.updateData(
+        EditPoint.parseTripCardToData(tripCard)
+    );
   }
 
   getTemplate() {
     return createEditFormTemplate(this._data);
   }
 
+  _eventTypeSelectHandler(evt) {
+    if (evt.target.name === `event-type`) {
+      const newType = evt.target.value;
+      this.updateData({
+        type: newType,
+        offers: getAvailaibleOffers(newType)
+      });
+    }
+  }
+
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._data);
+    this._callback.formSubmit(EditPoint.parseDataToTripCard(this._data));
   }
 
   _closeEditFormHandler() {
     this._callback.closeEditForm();
+  }
+
+  _destinationChangeHandler(evt) {
+    if (evt.target.value.length === 0) {
+      evt.target.setCustomValidity(`Choose your destination point`);
+    } else if (!Object.keys(destinations).includes(evt.target.value)) {
+      evt.target.setCustomValidity(`Please choose from the given points`);
+    } else {
+      evt.target.setCustomValidity(``);
+      const newDestination = evt.target.value;
+      this.updateData({
+        destination: newDestination,
+        photos: destinations[newDestination].photos,
+        description: destinations[newDestination].description
+      });
+    }
+    evt.target.reportValidity();
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.value.length === 0) {
+      evt.target.setCustomValidity(`Type in event price`);
+    } else if (!/^\d+$/.test(evt.target.value)) {
+      evt.target.setCustomValidity(`Digits only`);
+    } else {
+      evt.target.setCustomValidity(``);
+      this.updateData({
+        price: evt.target.value
+      }, true);
+    }
+    evt.target.reportValidity();
+  }
+
+  _offersClickHandler(evt) {
+    const state = evt.target.checked;
+    const type = evt.target.name.slice(12);
+
+    this.updateData({
+      offers: Object.assign(
+          {},
+          this._data.offers,
+          {[type]: Object.assign({}, this._data.offers[type], {checked: state})}
+      )
+    }, true);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditFormCloseHandler(this._callback.closeEditForm);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-group`)
+      .addEventListener(`click`, this._eventTypeSelectHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationChangeHandler);
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
+
+    const availableOffers = this.getElement().querySelectorAll(`.event__available-offers input`);
+    if (availableOffers) {
+      availableOffers.forEach((offer) => offer.addEventListener(`click`, this._offersClickHandler));
+    }
   }
 
   setFormSubmitHandler(callback) {
