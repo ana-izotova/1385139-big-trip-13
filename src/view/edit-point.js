@@ -1,5 +1,9 @@
 import {destinations, getAvailaibleOffers, emptyCard} from "../mock/event-cards.js";
 import SmartView from "./smart.js";
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import dayjs from "dayjs";
+import {getEventDuration} from "../utils/trip";
 
 const createEditFormTypeTemplate = (type, id) => {
   return `<label class="event__type  event__type-btn" for="event-type-toggle-${id}">
@@ -142,7 +146,7 @@ const createEditFormPhotosTemplate = (photos, isPhotos) => {
 };
 
 const createEditFormTemplate = (tripCard) => {
-  const {type, startDate, endDate, destination, offers, description, photos, price, id, isOffers, isPhotos, isDescription} = tripCard;
+  const {type, startDate, endDate, destination, offers, description, photos, price, id, isOffers, isPhotos, isDescription, isSubmitDisabled} = tripCard;
 
   const typeTemplate = createEditFormTypeTemplate(type, id);
   const destinationTemplate = createEditFormDestinationTemplate(type, id, destination, destinations);
@@ -171,7 +175,7 @@ const createEditFormTemplate = (tripCard) => {
           ${priceTemplate}
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? `disabled` : ``}>Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -195,15 +199,20 @@ class EditPoint extends SmartView {
   constructor(tripCard = emptyCard) {
     super();
     this._data = EditPoint.parseTripCardToData(tripCard);
+    this._datepickerStartDate = null;
+    this._datepickerEndDate = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._closeEditFormHandler = this._closeEditFormHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._eventTypeSelectHandler = this._eventTypeSelectHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._offersClickHandler = this._offersClickHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatePicker();
   }
 
   static parseTripCardToData(tripCard) {
@@ -213,7 +222,8 @@ class EditPoint extends SmartView {
         {
           isOffers: Object.keys(tripCard.offers).length === 0,
           isPhotos: tripCard.photos.length === 0,
-          isDescription: tripCard.description.length === 0
+          isDescription: tripCard.description.length === 0,
+          isSubmitDisabled: false
         }
     );
   }
@@ -224,6 +234,7 @@ class EditPoint extends SmartView {
     delete newData.isOffers;
     delete newData.isPhotos;
     delete newData.isDescription;
+    delete newData.isSubmitDisabled;
 
     return newData;
   }
@@ -302,10 +313,73 @@ class EditPoint extends SmartView {
     }, true);
   }
 
+  _setDatePicker() {
+    if (this._datepickerStartDate || this._datepickerEndDate) {
+      this._datepickerStartDate.destroy();
+      this._datepickerEndDate.destroy();
+
+      this._datepickerStartDate = null;
+      this._datepickerEndDate = null;
+    }
+
+    this._datepickerStartDate = flatpickr(
+        this.getElement().querySelector(`input[name="event-start-time"]`),
+        {
+          enableTime: true,
+          time_24hr: true,
+          altInput: true,
+          altFormat: `d/m/y H:i`,
+          dateFormat: `Y-m-d`,
+          minDate: Date.now(),
+          defaultDate: this._data.startDate.toDate(),
+          onChange: this._startDateChangeHandler
+        }
+    );
+
+    this._datepickerEndDate = flatpickr(
+        this.getElement().querySelector(`input[name="event-end-time"]`),
+        {
+          enableTime: true,
+          time_24hr: true,
+          altInput: true,
+          altFormat: `d/m/y H:i`,
+          dateFormat: `Y-m-d`,
+          minDate: this._data.startDate.toDate(),
+          defaultDate: this._data.endDate.toDate(),
+          onChange: this._endDateChangeHandler
+        }
+    );
+  }
+
+  _startDateChangeHandler([userDate]) {
+    this.updateData({
+      startDate: dayjs(userDate)
+    });
+
+    if (getEventDuration(this._data.startDate, this._data.endDate)) {
+      this.updateData({
+        isSubmitDisabled: true
+      });
+    }
+  }
+
+  _endDateChangeHandler([userDate]) {
+    this.updateData({
+      endDate: dayjs(userDate)
+    });
+
+    if (getEventDuration(this._data.startDate, this._data.endDate)) {
+      this.updateData({
+        isSubmitDisabled: false
+      });
+    }
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditFormCloseHandler(this._callback.closeEditForm);
+    this._setDatePicker();
   }
 
   _setInnerHandlers() {
