@@ -1,14 +1,8 @@
 import {destinations, getAvailaibleOffers, emptyCard} from "../mock/event-cards.js";
 import SmartView from "./smart.js";
 
-const createEditFormTemplate = (tripCard) => {
-  const {type, startDate, endDate, destination, offers, description, photos, price, id} = tripCard;
-
-  return `<li class="trip-events__item">
-    <form class="event event--edit" action="#" method="post">
-      <header class="event__header">
-        <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
+const createEditFormTypeTemplate = (type, id) => {
+  return `<label class="event__type  event__type-btn" for="event-type-toggle-${id}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
@@ -78,45 +72,41 @@ const createEditFormTemplate = (tripCard) => {
                 <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-${id}">Restaurant</label>
               </div>
             </fieldset>
-          </div>
-        </div>
+          </div>`;
+};
 
-        <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${id}">
+const createEditFormDestinationTemplate = (type, id, destination, destinationsList) => {
+  return `<label class="event__label  event__type-output" for="event-destination-${id}">
             ${type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
-            ${Object.keys(destinations).map((item) => {
-    return `<option value="${destinations[item].name}"></option>`;
+            ${Object.keys(destinationsList).map((item) => {
+    return `<option value="${destinationsList[item].name}"></option>`;
   }).join(``)}
-          </datalist>
-        </div>
+          </datalist>`;
+};
 
-        <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-${id}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${startDate.format(`DD/MM/YY HH:mm`)}">
-          &mdash;
-          <label class="visually-hidden" for="event-end-time-${id}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${endDate.format(`DD/MM/YY HH:mm`)}">
-        </div>
+const createEditFormTimeTemplate = (id, startDate, endDate) => {
+  return `<label class="visually-hidden" for="event-start-time-${id}">From</label>
+  <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time"
+         value="${startDate.format(`DD/MM/YY HH:mm`)}">
+    &mdash;
+    <label class="visually-hidden" for="event-end-time-${id}">To</label>
+    <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time"
+           value="${endDate.format(`DD/MM/YY HH:mm`)}">`;
+};
 
-        <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-${id}">
+const createEditFormPriceTemplate = (id, price) => {
+  return `<label class="event__label" for="event-price-${id}">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
-        </div>
+          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">`;
+};
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </header>
-      <section class="event__details">
-        ${Object.keys(offers).length === 0 ? `` : `
+const createEditFormOffersTemplate = (id, offers, isOffers) => {
+  return `${isOffers ? `` : `
           <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
@@ -133,19 +123,68 @@ const createEditFormTemplate = (tripCard) => {
 }
           </div>
           </section>`
-}
+  }`;
+};
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+const createEditFormDescriptionTemplate = (description, isDescription) => {
+  return `${isDescription ? `` :
+    `<p class="event__destination-description">${description}</p>`}`;
+};
 
-        ${photos.length === 0 ? `` : `
+const createEditFormPhotosTemplate = (photos, isPhotos) => {
+  return `${isPhotos ? `` : `
           <div class="event__photos-container">
             <div class="event__photos-tape">
               ${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``)}
             </div>
           </div>`
-}
+  }`;
+};
+
+const createEditFormTemplate = (tripCard) => {
+  const {type, startDate, endDate, destination, offers, description, photos, price, id, isOffers, isPhotos, isDescription} = tripCard;
+
+  const typeTemplate = createEditFormTypeTemplate(type, id);
+  const destinationTemplate = createEditFormDestinationTemplate(type, id, destination, destinations);
+  const timeTemplate = createEditFormTimeTemplate(id, startDate, endDate);
+  const priceTemplate = createEditFormPriceTemplate(id, price);
+  const offersTemplate = createEditFormOffersTemplate(id, offers, isOffers);
+  const descriptionTemplate = createEditFormDescriptionTemplate(description, isDescription);
+  const photosTemplate = createEditFormPhotosTemplate(photos, isPhotos);
+
+  return `<li class="trip-events__item">
+    <form class="event event--edit" action="#" method="post">
+      <header class="event__header">
+        <div class="event__type-wrapper">
+          ${typeTemplate}
+        </div>
+
+        <div class="event__field-group  event__field-group--destination">
+          ${destinationTemplate}
+        </div>
+
+        <div class="event__field-group  event__field-group--time">
+          ${timeTemplate}
+        </div>
+
+        <div class="event__field-group  event__field-group--price">
+          ${priceTemplate}
+        </div>
+
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      </header>
+      <section class="event__details">
+        ${offersTemplate}
+
+        <section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+           ${descriptionTemplate}
+
+        ${photosTemplate}
         </section>
       </section>
     </form>
@@ -168,11 +207,25 @@ class EditPoint extends SmartView {
   }
 
   static parseTripCardToData(tripCard) {
-    return Object.assign({}, tripCard);
+    return Object.assign(
+        {},
+        tripCard,
+        {
+          isOffers: Object.keys(tripCard.offers).length === 0,
+          isPhotos: tripCard.photos.length === 0,
+          isDescription: tripCard.description.length === 0
+        }
+    );
   }
 
   static parseDataToTripCard(data) {
-    return Object.assign({}, data);
+    const newData = Object.assign({}, data);
+
+    delete newData.isOffers;
+    delete newData.isPhotos;
+    delete newData.isDescription;
+
+    return newData;
   }
 
   reset(tripCard) {
