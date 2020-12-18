@@ -106,7 +106,7 @@ const createEditFormPriceTemplate = (id, price) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">`;
+          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}" required>`;
 };
 
 const createEditFormOffersTemplate = (id, offers, isOffers) => {
@@ -269,35 +269,26 @@ class EditPoint extends SmartView {
   }
 
   _destinationChangeHandler(evt) {
-    if (evt.target.value.length === 0) {
-      evt.target.setCustomValidity(`Choose your destination point`);
-    } else if (!Object.keys(destinations).includes(evt.target.value)) {
-      evt.target.setCustomValidity(`Please choose from the given points`);
-    } else {
-      evt.target.setCustomValidity(``);
-      const newDestination = evt.target.value;
-      this.updateData({
-        destination: newDestination,
-        photos: destinations[newDestination].photos,
-        description: destinations[newDestination].description
-      });
+    const newDestination = evt.target.value;
+
+    if (!destinations[newDestination]) {
+      evt.target.setCustomValidity(`You must choose actual destination point`);
+      evt.target.style.border = `1px solid red`;
+      evt.target.reportValidity();
+      return;
     }
-    evt.target.reportValidity();
+
+    this.updateData({
+      destination: newDestination,
+      photos: destinations[newDestination].photos,
+      description: destinations[newDestination].description
+    });
   }
 
   _priceInputHandler(evt) {
-    evt.preventDefault();
-    if (evt.target.value.length === 0) {
-      evt.target.setCustomValidity(`Type in event price`);
-    } else if (!/^\d+$/.test(evt.target.value)) {
-      evt.target.setCustomValidity(`Digits only`);
-    } else {
-      evt.target.setCustomValidity(``);
-      this.updateData({
-        price: evt.target.value
-      }, true);
-    }
-    evt.target.reportValidity();
+    this.updateData({
+      price: evt.target.value
+    }, true);
   }
 
   _offersClickHandler(evt) {
