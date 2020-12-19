@@ -195,6 +195,15 @@ const createEditFormTemplate = (tripCard) => {
   </li>`;
 };
 
+const flatpickrBasicSetup = {
+  enableTime: true,
+  // eslint-disable-next-line camelcase
+  time_24hr: true,
+  altInput: true,
+  altFormat: `d/m/y H:i`,
+  dateFormat: `Y-m-d`
+};
+
 class EditPoint extends SmartView {
   constructor(tripCard = emptyCard) {
     super();
@@ -315,30 +324,28 @@ class EditPoint extends SmartView {
 
     this._datepickerStartDate = flatpickr(
         this.getElement().querySelector(`input[name="event-start-time"]`),
-        {
-          enableTime: true,
-          time_24hr: true,
-          altInput: true,
-          altFormat: `d/m/y H:i`,
-          dateFormat: `Y-m-d`,
-          minDate: Date.now(),
-          defaultDate: this._data.startDate.toDate(),
-          onChange: this._startDateChangeHandler
-        }
+        Object.assign(
+            {},
+            flatpickrBasicSetup,
+            {
+              minDate: Date.now(),
+              defaultDate: this._data.startDate.toDate(),
+              onChange: this._startDateChangeHandler
+            }
+        )
     );
 
     this._datepickerEndDate = flatpickr(
         this.getElement().querySelector(`input[name="event-end-time"]`),
-        {
-          enableTime: true,
-          time_24hr: true,
-          altInput: true,
-          altFormat: `d/m/y H:i`,
-          dateFormat: `Y-m-d`,
-          minDate: this._data.startDate.toDate(),
-          defaultDate: this._data.endDate.toDate(),
-          onChange: this._endDateChangeHandler
-        }
+        Object.assign(
+            {},
+            flatpickrBasicSetup,
+            {
+              minDate: this._data.startDate.toDate(),
+              defaultDate: this._data.endDate.toDate(),
+              onChange: this._endDateChangeHandler
+            }
+        )
     );
   }
 
