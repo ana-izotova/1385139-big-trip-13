@@ -37,7 +37,8 @@ const getTripDates = (cards) => {
 
 const getTripCost = (cards) => {
   return cards.reduce(((cardsAcc, card) => {
-    const selectedOffersTotalPrice = card.offers
+    const cardOffers = Object.values(card.offers);
+    const selectedOffersTotalPrice = Object.values(cardOffers)
       .filter((offer) => offer.checked)
       .reduce(((offersAcc, offer) => offersAcc + offer.price), 0);
     return selectedOffersTotalPrice + cardsAcc + card.price;
