@@ -7,9 +7,10 @@ import {updateItem} from "../utils/common.js";
 import {sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
 import {SortType} from "../view/sort.js";
 
-class Trip {
-  constructor(tripEventsContainer) {
-    this._tripEventsContainer = tripEventsContainer;
+class TripBoard {
+  constructor(pointsContainer, pointsModel) {
+    this._pointsModel = pointsModel;
+    this._tripEventsContainer = pointsContainer;
 
     this._tripPresenter = {};
     this._currentSortType = SortType.DEFAULT;
@@ -26,8 +27,13 @@ class Trip {
   init(tripCards) {
     this._tripCards = tripCards.slice();
     this._sourcedCards = tripCards.slice();
-    this._renderTrip();
+    this._renderTripBoard();
   }
+
+  _getPoints() {
+    return this._pointsModel.getPoints();
+  }
+
 
   _sortTripCards(sortType) {
     switch (sortType) {
@@ -100,10 +106,10 @@ class Trip {
     this._tripPresenter = {};
   }
 
-  _renderTrip() {
+  _renderTripBoard() {
     this._renderSort();
     this._renderTripList();
   }
 }
 
-export default Trip;
+export default TripBoard;
