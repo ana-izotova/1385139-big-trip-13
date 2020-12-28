@@ -10,7 +10,7 @@ import {SortType} from "../view/sort.js";
 class TripBoard {
   constructor(pointsContainer, pointsModel) {
     this._pointsModel = pointsModel;
-    this._tripEventsContainer = pointsContainer;
+    this._tripPointsContainer = pointsContainer;
 
     this._tripPresenter = {};
     this._currentSortType = SortType.DEFAULT;
@@ -24,30 +24,19 @@ class TripBoard {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(tripCards) {
-    this._tripCards = tripCards.slice();
-    this._sourcedCards = tripCards.slice();
+  init() {
     this._renderTripBoard();
   }
 
   _getPoints() {
-    return this._pointsModel.getPoints();
-  }
-
-
-  _sortTripCards(sortType) {
-    switch (sortType) {
+    switch (this._currentSortType) {
       case SortType.PRICE:
-        this._tripCards.sort(sortTripCardsByPrice);
-        break;
+        return this._pointsModel.getPoints().slice().sort(sortTripCardsByPrice);
       case SortType.TIME:
-        this._tripCards.sort(sortTripCardsByDuration);
-        break;
-      default:
-        this._tripCards = this._sourcedCards.slice();
+        return this._pointsModel.getPoints().slice().sort(sortTripCardsByDuration);
     }
 
-    this._currentSortType = sortType;
+    return this._pointsModel.getPoints();
   }
 
   _handleSortTypeChange(sortType) {
@@ -55,41 +44,40 @@ class TripBoard {
       return;
     }
 
-    this._sortTripCards(sortType);
+    this._currentSortType = sortType;
     this._clearTripList();
-    this._renderTripList();
+    this._renderTripList(this._getPoints());
   }
 
   _renderSort() {
-    render(this._tripEventsContainer, this._sortingComponent, RenderPosition.BEFOREEND);
+    render(this._tripPointsContainer, this._sortingComponent, RenderPosition.BEFOREEND);
     this._sortingComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
-  _renderTripPoint(tripCard) {
+  _renderTripPoint(point) {
     const tripPresenter = new TripPointPresenter(this._tripListComponent, this._handleTripChange, this._handleModeChange);
-    tripPresenter.init(tripCard);
-    this._tripPresenter[tripCard.id] = tripPresenter;
+    tripPresenter.init(point);
+    this._tripPresenter[point.id] = tripPresenter;
   }
 
-  _renderTripPoints() {
-    this._tripCards.forEach((tripCard) => this._renderTripPoint(tripCard));
+  _renderTripPoints(points) {
+    points.forEach((point) => this._renderTripPoint(point));
   }
 
-  _renderTripList() {
-    render(this._tripEventsContainer, this._tripListComponent, RenderPosition.BEFOREEND);
-    if (this._tripCards.length === 0) {
+  _renderTripList(points) {
+    render(this._tripPointsContainer, this._tripListComponent, RenderPosition.BEFOREEND);
+    if (points.length === 0) {
       this._renderEmptyTripList();
     } else {
-      this._renderTripPoints();
+      this._renderTripPoints(points);
     }
   }
 
   _renderEmptyTripList() {
-    render(this._tripEventsContainer, this._emptyTripListComponent, RenderPosition.BEFOREEND);
+    render(this._tripPointsContainer, this._emptyTripListComponent, RenderPosition.BEFOREEND);
   }
 
   _handleTripChange(updatedTrip) {
-    this._tripCards = updateItem(this._tripCards, updatedTrip);
     this._tripPresenter[updatedTrip.id].init(updatedTrip);
   }
 
@@ -108,7 +96,7 @@ class TripBoard {
 
   _renderTripBoard() {
     this._renderSort();
-    this._renderTripList();
+    this._renderTripList(this._getPoints());
   }
 }
 

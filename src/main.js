@@ -17,9 +17,9 @@ const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
 
 const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel);
-const tripInfoPresenter = new TripInfoPresenter(tripInfoMainContainer);
+// const tripInfoPresenter = new TripInfoPresenter(tripInfoMainContainer);
 
 render(tripControlsContainer, new MenuView(), RenderPosition.AFTERBEGIN);
 render(tripControlsContainer, new FiltersView(), RenderPosition.BEFOREEND);
-tripInfoPresenter.init(cards);
-tripBoardPresenter.init(cards);
+// tripInfoPresenter.init();
+tripBoardPresenter.init();
