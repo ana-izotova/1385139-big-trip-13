@@ -1,6 +1,7 @@
 import TripPointView from "../view/trip-point.js";
 import EditPointView from "../view/edit-point.js";
 import {remove, render, RenderPosition, replace} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -93,6 +94,8 @@ class Point {
 
   _handleFavouriteClick() {
     this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._tripCard,
