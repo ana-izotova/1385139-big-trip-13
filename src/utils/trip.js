@@ -55,4 +55,8 @@ const sortTripCardsByDuration = (tripCard1, tripCard2) => {
   return time2 - time1;
 };
 
-export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, sortTripCardsByPrice, sortTripCardsByDuration};
+const isDatesEqual = (dateA, dateB) => {
+  return (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, `D`);
+};
+
+export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual};

@@ -212,6 +212,7 @@ class EditPoint extends SmartView {
     this._datepickerEndDate = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._closeEditFormHandler = this._closeEditFormHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
@@ -246,6 +247,17 @@ class EditPoint extends SmartView {
     delete newData.isSubmitDisabled;
 
     return newData;
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerStartDate || this._datepickerEndDate) {
+      this._datepickerStartDate.destroy();
+      this._datepickerEndDate.destroy();
+      this._datepickerStartDate = null;
+      this._datepickerEndDate = null;
+    }
   }
 
   reset(tripCard) {
@@ -377,6 +389,7 @@ class EditPoint extends SmartView {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditFormCloseHandler(this._callback.closeEditForm);
+    this.setDeleteClickHandler(this._callback.deleteClick);
     this._setDatePicker();
   }
 
@@ -409,6 +422,18 @@ class EditPoint extends SmartView {
     this.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, this._closeEditFormHandler);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditPoint.parseDataToTripCard(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._formDeleteClickHandler);
   }
 }
 
