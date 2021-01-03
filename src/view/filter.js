@@ -36,7 +36,7 @@ const createFilterTemplate = (filterItems, currentFilterType) => {
           </form></div>`;
 };
 
-class Filters extends AbstractView {
+class Filter extends AbstractView {
   constructor(filters, currentFilterType) {
     super();
     this._filters = filters;
@@ -62,4 +62,4 @@ class Filters extends AbstractView {
   }
 }
 
-export default Filters;
+export default Filter;

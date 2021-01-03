@@ -5,10 +5,12 @@ import TripPointPresenter from "./point.js";
 import {render, remove, RenderPosition} from "../utils/render.js";
 import {sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
 import {SortType, UpdateType, UserAction} from "../const.js";
+import {filter} from "../utils/filter";
 
 class TripBoard {
-  constructor(pointsContainer, pointsModel) {
+  constructor(pointsContainer, pointsModel, filterModel) {
     this._pointsModel = pointsModel;
+    this._filterModel = filterModel;
     this._tripPointsContainer = pointsContainer;
 
     this._tripPresenter = {};
@@ -24,6 +26,7 @@ class TripBoard {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -31,14 +34,18 @@ class TripBoard {
   }
 
   _getPoints() {
+    const filterType = this._filterModel.getFilter();
+    const points = this._pointsModel.getPoints();
+    const filteredPoints = filter[filterType](points);
+
     switch (this._currentSortType) {
       case SortType.PRICE:
-        return this._pointsModel.getPoints().slice().sort(sortTripCardsByPrice);
+        return filteredPoints.sort(sortTripCardsByPrice);
       case SortType.TIME:
-        return this._pointsModel.getPoints().slice().sort(sortTripCardsByDuration);
+        return filteredPoints.sort(sortTripCardsByDuration);
     }
 
-    return this._pointsModel.getPoints();
+    return filteredPoints;
   }
 
   _handleSortTypeChange(sortType) {
