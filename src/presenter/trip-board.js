@@ -4,7 +4,7 @@ import EmptyTripListView from "../view/trip-list-empty.js";
 import TripPointPresenter from "./point.js";
 import NewPointPresenter from "./new-point.js";
 import {render, remove, RenderPosition} from "../utils/render.js";
-import {sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
+import {defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 import {filter} from "../utils/filter";
 
@@ -52,9 +52,9 @@ class TripBoard {
         return filteredPoints.sort(sortTripCardsByPrice);
       case SortType.TIME:
         return filteredPoints.sort(sortTripCardsByDuration);
+      default:
+        return filteredPoints.sort(defaultSortTripCardsByDate);
     }
-
-    return filteredPoints;
   }
 
   _handleSortTypeChange(sortType) {

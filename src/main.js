@@ -20,13 +20,13 @@ const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
 
 const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel);
-// const tripInfoPresenter = new TripInfoPresenter(tripInfoMainContainer);
+const tripInfoPresenter = new TripInfoPresenter(tripInfoMainContainer, pointsModel);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel);
 
 render(tripControlsContainer, new MenuView(), RenderPosition.AFTERBEGIN);
 
-// tripInfoPresenter.init();
 tripBoardPresenter.init();
+tripInfoPresenter.init();
 filterPresenter.init();
 
 const addNewEventButtton = tripInfoMainContainer.querySelector(`.trip-main__event-add-btn`);

@@ -24,6 +24,7 @@ const humanizeEventDuration = (timeDiff) => {
 
 const getTripRoute = (cards) => {
   const cities = [...new Set(cards.map((card) => card.destination))];
+
   return cities.length > 3 ?
     `${cities[0]} — ... — ${cities[cities.length - 1]}` :
     `${cities.join(` — `)}`;
@@ -45,6 +46,8 @@ const getTripCost = (cards) => {
   }), 0);
 };
 
+const defaultSortTripCardsByDate = (tripCard1, tripCard2) => tripCard1.startDate.diff(tripCard2.startDate);
+
 const sortTripCardsByPrice = (tripCard1, tripCard2) => {
   return tripCard2.price - tripCard1.price;
 };
@@ -59,4 +62,4 @@ const isDatesEqual = (dateA, dateB) => {
   return (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, `D`);
 };
 
-export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual};
+export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual};

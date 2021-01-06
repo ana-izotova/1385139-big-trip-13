@@ -308,7 +308,7 @@ class EditPoint extends SmartView {
 
   _priceInputHandler(evt) {
     this.updateData({
-      price: evt.target.value
+      price: Number(evt.target.value)
     }, true);
   }
 
