@@ -28,3 +28,9 @@ render(tripControlsContainer, new MenuView(), RenderPosition.AFTERBEGIN);
 // tripInfoPresenter.init();
 tripBoardPresenter.init();
 filterPresenter.init();
+
+const addNewEventButtton = tripInfoMainContainer.querySelector(`.trip-main__event-add-btn`);
+addNewEventButtton.addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripBoardPresenter.createPoint();
+});

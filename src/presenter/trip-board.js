@@ -2,9 +2,10 @@ import SortTripView from "../view/sort.js";
 import TripListView from "../view/trip-list.js";
 import EmptyTripListView from "../view/trip-list-empty.js";
 import TripPointPresenter from "./point.js";
+import NewPointPresenter from "./new-point.js";
 import {render, remove, RenderPosition} from "../utils/render.js";
 import {sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
-import {SortType, UpdateType, UserAction} from "../const.js";
+import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 import {filter} from "../utils/filter";
 
 class TripBoard {
@@ -27,10 +28,18 @@ class TripBoard {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
   }
 
   init() {
     this._renderTripBoard();
+  }
+
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._newPointPresenter.init();
   }
 
   _getPoints() {
@@ -117,12 +126,14 @@ class TripBoard {
   }
 
   _handleModeChange() {
+    this._newPointPresenter.destroy();
     Object
       .values(this._tripPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
   _clearTripBoard({resetSortType = false} = {}) {
+    this._newPointPresenter.destroy();
     Object
       .values(this._tripPresenter)
       .forEach((presenter) => presenter.destroy());

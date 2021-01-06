@@ -215,4 +215,4 @@ const emptyCard = {
   id: generateId()
 };
 
-export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard};
+export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard, generateId};
