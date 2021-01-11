@@ -30,11 +30,13 @@ const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      tripBoardPresenter.showTripBoard();
       statsPresenter.destroy();
+      tripBoardPresenter.showTripBoard();
+      tripBoardPresenter.init();
       break;
     case MenuItem.STATS:
       tripBoardPresenter.hideTripBoard();
+      tripBoardPresenter.destroy();
       statsPresenter.init();
       break;
   }
@@ -57,7 +59,9 @@ const handleNewPointFormOpen = (evt) => {
   statsPresenter.destroy();
   menuPresenter.setActiveMenuItemToDefault();
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+  tripBoardPresenter.destroy();
   tripBoardPresenter.showTripBoard();
+  tripBoardPresenter.init();
   tripBoardPresenter.createPoint(handleNewPointFormClose);
   addNewEventButton.disabled = true;
   addNewEventButton.removeEventListener(`click`, handleNewPointFormOpen);

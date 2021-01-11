@@ -21,6 +21,9 @@ class Menu extends AbstractView {
   }
 
   _menuClickHandler(evt) {
+    if (evt.target.classList.contains(`trip-tabs__btn--active`)) {
+      return;
+    }
     evt.preventDefault();
     this._callback.menuClick(evt.target.dataset.menuItem);
     this.setMenuActiveItem(evt.target.dataset.menuItem);
