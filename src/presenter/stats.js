@@ -17,8 +17,10 @@ class Stats {
   }
 
   destroy() {
-    remove(this._statsComponent);
-    this._statsComponent = null;
+    if (this._statsComponent) {
+      remove(this._statsComponent);
+      this._statsComponent = null;
+    }
   }
 
   _handleModelEvent() {

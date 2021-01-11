@@ -9,6 +9,7 @@ class NewPoint {
     this._changeData = changeData;
 
     this._tripEditComponent = null;
+    this._destroyCallback = null;
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleCloseFormClick = this._handleCloseFormClick.bind(this);
@@ -16,7 +17,9 @@ class NewPoint {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._destroyCallback = callback;
+
     if (this._tripEditComponent !== null) {
       return;
     }
@@ -33,6 +36,10 @@ class NewPoint {
   destroy() {
     if (this._tripEditComponent === null) {
       return;
+    }
+
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
     }
 
     remove(this._tripEditComponent);

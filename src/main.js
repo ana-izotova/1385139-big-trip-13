@@ -1,10 +1,12 @@
 import TripBoardPresenter from "./presenter/trip-board.js";
 import TripInfoPresenter from "./presenter/info.js";
 import FilterPresenter from "./presenter/filter.js";
+import MenuPresenter from "./presenter/menu.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
-import MenuView from "./view/menu.js";
-import {render, RenderPosition} from "./utils/render.js";
+
+import StatsPresenter from "./presenter/stats.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
 import {cards} from "./mock/event-cards.js";
 
 const pointsModel = new PointsModel();
@@ -12,25 +14,54 @@ pointsModel.setPoints(cards);
 
 const filterModel = new FilterModel();
 
-const pageHeader = document.querySelector(`.page-header`);
-const tripInfoMainContainer = pageHeader.querySelector(`.trip-main`);
-const tripControlsContainer = tripInfoMainContainer.querySelector(`.trip-main__trip-controls`);
+const tripMainContainer = document.querySelector(`.trip-main`);
+const tripControlsContainer = tripMainContainer.querySelector(`.trip-main__trip-controls`);
 
 const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
+const pageBodyContainer = pageMain.querySelector(`.page-body__container`);
 
 const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel);
-const tripInfoPresenter = new TripInfoPresenter(tripInfoMainContainer, pointsModel);
+const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
+const menuPresenter = new MenuPresenter(tripControlsContainer);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel);
+const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
 
-render(tripControlsContainer, new MenuView(), RenderPosition.AFTERBEGIN);
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      tripBoardPresenter.showTripBoard();
+      statsPresenter.destroy();
+      break;
+    case MenuItem.STATS:
+      tripBoardPresenter.hideTripBoard();
+      statsPresenter.init();
+      break;
+  }
+};
 
 tripBoardPresenter.init();
 tripInfoPresenter.init();
+menuPresenter.init();
 filterPresenter.init();
 
-const addNewEventButtton = tripInfoMainContainer.querySelector(`.trip-main__event-add-btn`);
-addNewEventButtton.addEventListener(`click`, (evt) => {
+menuPresenter.setMenuClickHandler(handleMenuClick);
+
+const handleNewPointFormClose = () => {
+  addNewEventButton.disabled = false;
+  addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
+};
+
+const handleNewPointFormOpen = (evt) => {
   evt.preventDefault();
-  tripBoardPresenter.createPoint();
-});
+  statsPresenter.destroy();
+  menuPresenter.setActiveMenuItemToDefault();
+  filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+  tripBoardPresenter.showTripBoard();
+  tripBoardPresenter.createPoint(handleNewPointFormClose);
+  addNewEventButton.disabled = true;
+  addNewEventButton.removeEventListener(`click`, handleNewPointFormOpen);
+};
+
+const addNewEventButton = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
+addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
