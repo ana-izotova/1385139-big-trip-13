@@ -27,7 +27,7 @@ class Menu {
 
   _renderMenu() {
     this._menuComponent = new MenuView();
-    render(this._menuContainer, this._menuComponent, RenderPosition.AFTERBEGIN)
+    render(this._menuContainer, this._menuComponent, RenderPosition.AFTERBEGIN);
   }
 }
 

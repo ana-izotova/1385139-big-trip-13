@@ -5,7 +5,7 @@ import TripPointPresenter from "./point.js";
 import NewPointPresenter from "./new-point.js";
 import {render, remove, RenderPosition} from "../utils/render.js";
 import {defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration} from "../utils/trip.js";
-import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
+import {SortType, UpdateType, UserAction} from "../const.js";
 import {filter} from "../utils/filter";
 
 class TripBoard {
