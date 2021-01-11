@@ -56,12 +56,16 @@ const handleNewPointFormClose = () => {
 
 const handleNewPointFormOpen = (evt) => {
   evt.preventDefault();
-  statsPresenter.destroy();
+
   menuPresenter.setActiveMenuItemToDefault();
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-  tripBoardPresenter.destroy();
-  tripBoardPresenter.showTripBoard();
-  tripBoardPresenter.init();
+
+  if (document.querySelector(`.statistics`)) {
+    statsPresenter.destroy();
+    tripBoardPresenter.showTripBoard();
+    tripBoardPresenter.init();
+  }
+
   tripBoardPresenter.createPoint(handleNewPointFormClose);
   addNewEventButton.disabled = true;
   addNewEventButton.removeEventListener(`click`, handleNewPointFormOpen);
