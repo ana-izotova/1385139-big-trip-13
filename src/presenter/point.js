@@ -1,6 +1,8 @@
 import TripPointView from "../view/trip-point.js";
 import EditPointView from "../view/edit-point.js";
 import {remove, render, RenderPosition, replace} from "../utils/render.js";
+import {isDatesEqual} from "../utils/trip.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -21,6 +23,7 @@ class Point {
     this._handleFavouriteClick = this._handleFavouriteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleCloseFormClick = this._handleCloseFormClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -37,6 +40,7 @@ class Point {
     this._tripComponent.setFavouriteClickHandler(this._handleFavouriteClick);
     this._tripEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._tripEditComponent.setEditFormCloseHandler(this._handleCloseFormClick);
+    this._tripEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevTripComponent === null || prevTripEditComponent === null) {
       render(this._tripListContainer, this._tripComponent, RenderPosition.BEFOREEND);
@@ -93,6 +97,8 @@ class Point {
 
   _handleFavouriteClick() {
     this._changeData(
+        UserAction.UPDATE_POINT,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._tripCard,
@@ -103,9 +109,25 @@ class Point {
     );
   }
 
-  _handleFormSubmit(tripCard) {
-    this._changeData(tripCard);
+  _handleFormSubmit(update) {
+    const isMinorUpdate =
+      !isDatesEqual(this._tripCard.startDate, update.startDate) ||
+      !isDatesEqual(this._tripCard.endDate, update.endDate);
+
+    this._changeData(
+        UserAction.UPDATE_POINT,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
+    );
     this._replaceFormToCard();
+  }
+
+  _handleDeleteClick(point) {
+    this._changeData(
+        UserAction.DELETE_POINT,
+        UpdateType.MINOR,
+        point
+    );
   }
 
   _handleCloseFormClick() {

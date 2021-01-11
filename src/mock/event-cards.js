@@ -151,7 +151,7 @@ const types = [
 export const generateDate = () => {
   const date = dayjs();
   const tripTime = getRandomInt(0, MAX_TRIP_TIME);
-  const start = date.add(getRandomInt(1, MAX_TRIP_TIME), `day`);
+  const start = date.add(getRandomInt(-10, MAX_TRIP_TIME), `day`).add(getRandomInt(0, 24), `hour`).add(getRandomInt(0, 60), `minute`);
   const end = start.add(tripTime, `day`).add(getRandomInt(0, 24), `hour`).add(getRandomInt(0, 60), `minute`);
   return [start, end];
 };
@@ -215,4 +215,4 @@ const emptyCard = {
   id: generateId()
 };
 
-export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard};
+export {AllOffers, destinations, cards, getAvailaibleOffers, emptyCard, generateId};
