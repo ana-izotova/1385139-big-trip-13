@@ -27,12 +27,12 @@ class TripBoard {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
     this._renderTripBoard();
   }
 
@@ -40,8 +40,6 @@ class TripBoard {
     this._clearTripBoard({resetSortType: true});
 
     remove(this._tripListComponent);
-    this._pointsModel.removeObserver(this._handleModelEvent);
-    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   createPoint(callback) {
