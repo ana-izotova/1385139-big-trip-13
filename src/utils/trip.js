@@ -46,6 +46,14 @@ const getTripCost = (cards) => {
   }), 0);
 };
 
+const getDurationDays = (diffInMs) => {
+  const timeDuration = dayjs.duration(diffInMs);
+  const days = timeDuration.days();
+  const hours = timeDuration.hours();
+
+  return (days > 0 ? `${addZeroToNumber(days)}D` : `${addZeroToNumber(hours)}H`);
+};
+
 const defaultSortTripCardsByDate = (tripCard1, tripCard2) => tripCard1.startDate.diff(tripCard2.startDate);
 
 const sortTripCardsByPrice = (tripCard1, tripCard2) => {
@@ -62,4 +70,4 @@ const isDatesEqual = (dateA, dateB) => {
   return (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, `D`);
 };
 
-export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual};
+export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual, getDurationDays};

@@ -343,11 +343,13 @@ class EditPoint extends SmartView {
   }
 
   _setDatePicker() {
-    if (this._datepickerStartDate || this._datepickerEndDate) {
+    if (this._datepickerStartDate) {
       this._datepickerStartDate.destroy();
-      this._datepickerEndDate.destroy();
-
       this._datepickerStartDate = null;
+    }
+
+    if (this._datepickerEndDate) {
+      this._datepickerEndDate.destroy();
       this._datepickerEndDate = null;
     }
 

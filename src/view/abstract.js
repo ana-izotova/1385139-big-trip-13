@@ -25,6 +25,14 @@ class Abstract {
   removeElement() {
     this._element = null;
   }
+
+  show(className) {
+    this.getElement().classList.remove(className);
+  }
+
+  hide(className) {
+    this.getElement().classList.add(className);
+  }
 }
 
 export default Abstract;
