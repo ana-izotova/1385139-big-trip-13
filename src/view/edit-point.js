@@ -3,7 +3,6 @@ import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 import dayjs from "dayjs";
 import {getEventDuration, getAvailableOffers} from "../utils/trip.js";
-import {generateId} from "../utils/common.js";
 
 const emptyCard = {
   type: `taxi`,
@@ -16,8 +15,7 @@ const emptyCard = {
     description: ``
   },
   price: 0,
-  isFavourite: false,
-  id: generateId()
+  isFavourite: false
 };
 
 const createEditFormTypeTemplate = (type, id) => {
