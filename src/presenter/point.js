@@ -36,7 +36,7 @@ class Point {
     const prevTripEditComponent = this._tripEditComponent;
 
     this._tripComponent = new TripPointView(this._tripCard);
-    this._tripEditComponent = new EditPointView(this._tripCard, this._offersModel, this._destinationsModel);
+    this._tripEditComponent = new EditPointView(this._offersModel, this._destinationsModel, this._tripCard);
 
     this._tripComponent.setEditClickHandler(this._handleEditClick);
     this._tripComponent.setFavouriteClickHandler(this._handleFavouriteClick);

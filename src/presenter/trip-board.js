@@ -32,7 +32,7 @@ class TripBoard {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
+    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction, offersModel, destinationsModel);
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);

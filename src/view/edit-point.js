@@ -236,7 +236,7 @@ const flatpickrBasicSetup = {
 };
 
 class EditPoint extends SmartView {
-  constructor(tripCard = emptyCard, offersModel, destinationsModel) {
+  constructor(offersModel, destinationsModel, tripCard = emptyCard) {
     super();
     this._allDestinations = destinationsModel.getDestinations();
     this._allOffers = offersModel.getOffers();
@@ -345,9 +345,8 @@ class EditPoint extends SmartView {
     const state = evt.target.checked;
     const type = evt.target.name.slice(12);
 
-    const changedOffer = this._availableOffers.find((offer) => offer.title.includes(type));
-
     if (state) {
+      const changedOffer = this._availableOffers.find((offer) => offer.title.includes(type));
       this._data.offers.push(changedOffer);
     } else {
       const offerToRemove = this._data.offers.find((offer) => offer.title.includes(type));

@@ -33,7 +33,6 @@ class Api {
   }
 
   updatePoint(point) {
-    console.log(PointsModel.adaptToServer(point))
     return this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
