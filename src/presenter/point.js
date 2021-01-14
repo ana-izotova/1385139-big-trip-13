@@ -10,10 +10,12 @@ const Mode = {
 };
 
 class Point {
-  constructor(tripListContainer, changeData, changeMode) {
+  constructor(tripListContainer, changeData, changeMode, offersModel, destinationsModel) {
     this._tripListContainer = tripListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._tripComponent = null;
     this._tripEditComponent = null;
@@ -34,7 +36,7 @@ class Point {
     const prevTripEditComponent = this._tripEditComponent;
 
     this._tripComponent = new TripPointView(this._tripCard);
-    this._tripEditComponent = new EditPointView(this._tripCard);
+    this._tripEditComponent = new EditPointView(this._tripCard, this._offersModel, this._destinationsModel);
 
     this._tripComponent.setEditClickHandler(this._handleEditClick);
     this._tripComponent.setFavouriteClickHandler(this._handleFavouriteClick);
@@ -103,7 +105,7 @@ class Point {
             {},
             this._tripCard,
             {
-              favourite: !this._tripCard.favourite
+              isFavourite: !this._tripCard.isFavourite
             }
         )
     );

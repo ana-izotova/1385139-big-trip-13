@@ -5,4 +5,6 @@ const getRandomInt = (min = 0, max = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export {getRandomInt};
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+export {getRandomInt, generateId};

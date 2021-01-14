@@ -4,15 +4,14 @@ import FilterPresenter from "./presenter/filter.js";
 import MenuPresenter from "./presenter/menu.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
-
+import DestinationsModel from "./model/destinations.js";
+import OffersModel from "./model/offers.js";
 import StatsPresenter from "./presenter/stats.js";
 import {MenuItem, UpdateType, FilterType} from "./const.js";
-import {cards} from "./mock/event-cards.js";
+import Api from "./api.js";
 
-const pointsModel = new PointsModel();
-pointsModel.setPoints(cards);
-
-const filterModel = new FilterModel();
+const AUTHORIZATION = `Basic thl7xk1e6ng3fpr`;
+const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 
 const tripMainContainer = document.querySelector(`.trip-main`);
 const tripControlsContainer = tripMainContainer.querySelector(`.trip-main__trip-controls`);
@@ -21,11 +20,43 @@ const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
 const pageBodyContainer = pageMain.querySelector(`.page-body__container`);
 
-const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel);
+const api = new Api(END_POINT, AUTHORIZATION);
+
+const pointsModel = new PointsModel();
+const filterModel = new FilterModel();
+const destinationsModel = new DestinationsModel();
+const offersModel = new OffersModel();
+
+const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel, offersModel, destinationsModel, api);
 const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
 const menuPresenter = new MenuPresenter(tripControlsContainer);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel);
 const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
+
+Promise
+  .all([
+    api.getPoints(),
+    api.getDestinations(),
+    api.getOffers()
+  ])
+  .then(([points, destinations, offers]) => {
+    destinationsModel.setDestinations(destinations);
+    offersModel.setOffers(offers);
+    pointsModel.setPoints(UpdateType.INIT, points);
+    menuPresenter.init();
+    filterPresenter.init();
+    menuPresenter.setMenuClickHandler(handleMenuClick);
+
+  })
+  .catch((err) => {
+    console.log(err)
+    pointsModel.setPoints(UpdateType.INIT, []);
+    menuPresenter.init();
+    filterPresenter.init();
+    menuPresenter.setMenuClickHandler(handleMenuClick);
+
+  });
+
 
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -44,10 +75,6 @@ const handleMenuClick = (menuItem) => {
 
 tripBoardPresenter.init();
 tripInfoPresenter.init();
-menuPresenter.init();
-filterPresenter.init();
-
-menuPresenter.setMenuClickHandler(handleMenuClick);
 
 const handleNewPointFormClose = () => {
   addNewEventButton.disabled = false;

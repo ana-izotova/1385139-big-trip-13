@@ -7,9 +7,6 @@ class Stats {
     this._pointsModel = pointsModel;
 
     this._statsComponent = null;
-
-    this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -21,11 +18,6 @@ class Stats {
       remove(this._statsComponent);
       this._statsComponent = null;
     }
-  }
-
-  _handleModelEvent() {
-    this.destroy();
-    this.init();
   }
 
   _renderStats() {

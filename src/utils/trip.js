@@ -22,27 +22,25 @@ const humanizeEventDuration = (timeDiff) => {
     `;
 };
 
-const getTripRoute = (cards) => {
-  const cities = [...new Set(cards.map((card) => card.destination))];
+const getTripRoute = (points) => {
+  const cities = [...new Set(points.map((point) => point.destination.name))];
 
   return cities.length > 3 ?
     `${cities[0]} — ... — ${cities[cities.length - 1]}` :
     `${cities.join(` — `)}`;
 };
 
-const getTripDates = (cards) => {
-  const tripStartDate = cards[0].startDate.format(`MMM D`);
-  const tripEndDate = cards[cards.length - 1].endDate.format(`MMM D`);
+const getTripDates = (points) => {
+  const tripStartDate = points[0].startDate.format(`MMM D`);
+  const tripEndDate = points[points.length - 1].endDate.format(`MMM D`);
   return [tripStartDate, tripEndDate];
 };
 
-const getTripCost = (cards) => {
-  return cards.reduce(((cardsAcc, card) => {
-    const cardOffers = Object.values(card.offers);
-    const selectedOffersTotalPrice = Object.values(cardOffers)
-      .filter((offer) => offer.checked)
+const getTripCost = (points) => {
+  return points.reduce(((pointsAcc, point) => {
+    const pointOffersTotalPrice = point.offers
       .reduce(((offersAcc, offer) => offersAcc + offer.price), 0);
-    return selectedOffersTotalPrice + cardsAcc + card.price;
+    return pointOffersTotalPrice + pointsAcc + point.price;
   }), 0);
 };
 
@@ -54,15 +52,15 @@ const getDurationDays = (diffInMs) => {
   return (days > 0 ? `${addZeroToNumber(days)}D` : `${addZeroToNumber(hours)}H`);
 };
 
-const defaultSortTripCardsByDate = (tripCard1, tripCard2) => tripCard1.startDate.diff(tripCard2.startDate);
+const defaultSortPointsByDate = (point1, point2) => point1.startDate.diff(point2.startDate);
 
-const sortTripCardsByPrice = (tripCard1, tripCard2) => {
-  return tripCard2.price - tripCard1.price;
+const sortPointsByPrice = (point1, point2) => {
+  return point2.price - point1.price;
 };
 
-const sortTripCardsByDuration = (tripCard1, tripCard2) => {
-  const time1 = getEventDuration(tripCard1.startDate, tripCard1.endDate);
-  const time2 = getEventDuration(tripCard2.startDate, tripCard2.endDate);
+const sortPointsByDuration = (point1, point2) => {
+  const time1 = getEventDuration(point1.startDate, point1.endDate);
+  const time2 = getEventDuration(point2.startDate, point2.endDate);
   return time2 - time1;
 };
 
@@ -70,4 +68,11 @@ const isDatesEqual = (dateA, dateB) => {
   return (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, `D`);
 };
 
-export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, defaultSortTripCardsByDate, sortTripCardsByPrice, sortTripCardsByDuration, isDatesEqual, getDurationDays};
+const getAvailableOffers = (allOffers, type) => {
+  return allOffers
+    .filter((offer) => offer.type === type)
+    .map((offer) => offer.offers)[0];
+};
+
+export {getEventDuration, humanizeEventDuration, getTripRoute, getTripDates, getTripCost, defaultSortPointsByDate,
+  sortPointsByPrice, sortPointsByDuration, isDatesEqual, getDurationDays, getAvailableOffers};
