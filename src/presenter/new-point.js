@@ -3,11 +3,9 @@ import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
 class NewPoint {
-  constructor(tripListContainer, changeData, offersModel, destinationsModel) {
+  constructor(tripListContainer, changeData) {
     this._tripListContainer = tripListContainer;
     this._changeData = changeData;
-    this._offersModel = offersModel;
-    this._destinationsModel = destinationsModel;
 
     this._tripEditComponent = null;
     this._destroyCallback = null;
@@ -25,7 +23,7 @@ class NewPoint {
       return;
     }
 
-    this._tripEditComponent = new EditPointView(this._offersModel, this._destinationsModel);
+    this._tripEditComponent = new EditPointView();
     this._tripEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._tripEditComponent.setEditFormCloseHandler(this._handleCloseFormClick);
     this._tripEditComponent.setDeleteClickHandler(this._handleDeleteClick);

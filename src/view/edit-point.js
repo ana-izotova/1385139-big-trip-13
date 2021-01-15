@@ -1,4 +1,5 @@
 import SmartView from "./smart.js";
+import DataStorage from "../dataStorage.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 import dayjs from "dayjs";
@@ -122,19 +123,19 @@ const createEditFormPriceTemplate = (id, price, isDisabled) => {
           <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}" required ${isDisabled ? `disabled` : ``}>`;
 };
 
-const createEditFormOffersTemplate = (offers, availableOffers, isDisabled) => {
+const createEditFormOffersTemplate = (offers, availableOffers, id, isDisabled) => {
   const isOffers = availableOffers.length > 0;
   return `${!isOffers ? `` : `
           <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-          ${availableOffers.map((offer, index) => {
+          ${availableOffers.map((offer) => {
     const {title, price} = offer;
-    const offerType = title.split(` `).pop();
+    const offerType = title.split(` `).join(`-`).toLowerCase();
     const isSelected = Boolean(offers.find((item) => item.title === title));
     return `<div class="event__offer-selector">
-                      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-${index}" type="checkbox" name="event-offer-${offerType}" ${isSelected ? `checked` : ``} ${isDisabled ? `disabled` : ``}>
-                      <label class="event__offer-label" for="event-offer-${offerType}-${index}">
+                      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-${id}" type="checkbox" name="event-offer-${offerType}" ${isSelected ? `checked` : ``} ${isDisabled ? `disabled` : ``}>
+                      <label class="event__offer-label" for="event-offer-${offerType}-${id}">
                         <span class="event__offer-title">${title}</span>
                         &plus;&euro;&nbsp;
                         <span class="event__offer-price">${price}</span>
@@ -181,13 +182,14 @@ const createEditFormDestinationInfoTemplate = (destination) => {
 };
 
 const createEditFormTemplate = (tripCard, availableOffers, allDestinations) => {
-  const {type, startDate, endDate, destination, offers, price, id, isDisabled, isSaving, isDeleting, isSubmitDisabled} = tripCard;
+  const {type, startDate, endDate, destination, offers, price, isDisabled, isSaving, isDeleting, isSubmitDisabled} = tripCard;
+  const id = typeof tripCard.id !== `undefined` ? tripCard.id : `new`;
 
-  const typeTemplate = createEditFormTypeTemplate(type, id);
-  const destinationTemplate = createEditFormDestinationTemplate(type, id, destination, allDestinations);
-  const timeTemplate = createEditFormTimeTemplate(id, startDate, endDate);
-  const priceTemplate = createEditFormPriceTemplate(id, price);
-  const offersTemplate = createEditFormOffersTemplate(offers, availableOffers);
+  const typeTemplate = createEditFormTypeTemplate(type, id, isDisabled);
+  const destinationTemplate = createEditFormDestinationTemplate(type, id, destination, allDestinations, isDisabled);
+  const timeTemplate = createEditFormTimeTemplate(id, startDate, endDate, isDisabled);
+  const priceTemplate = createEditFormPriceTemplate(id, price, isDisabled);
+  const offersTemplate = createEditFormOffersTemplate(offers, availableOffers, id, isDisabled);
   const destinationInfoTemplate = createEditFormDestinationInfoTemplate(destination);
 
   return `<li class="trip-events__item">
@@ -234,10 +236,10 @@ const flatpickrBasicSetup = {
 };
 
 class EditPoint extends SmartView {
-  constructor(offersModel, destinationsModel, tripCard = emptyCard) {
+  constructor(tripCard = emptyCard) {
     super();
-    this._allDestinations = destinationsModel.getDestinations();
-    this._allOffers = offersModel.getOffers();
+    this._allDestinations = DataStorage.getDestinations();
+    this._allOffers = DataStorage.getOffers();
     this._availableOffers = getAvailableOffers(this._allOffers, tripCard.type);
 
     this._data = EditPoint.parseTripCardToData(tripCard, this._availableOffers);
@@ -305,9 +307,9 @@ class EditPoint extends SmartView {
   _eventTypeSelectHandler(evt) {
     if (evt.target.name === `event-type`) {
       const newType = evt.target.value;
+      this._availableOffers = getAvailableOffers(this._allOffers, newType);
       this.updateData({
         type: newType,
-        availableOffers: getAvailableOffers(this._allOffers, newType),
         offers: []
       });
     }
@@ -345,23 +347,17 @@ class EditPoint extends SmartView {
     }, true);
   }
 
-  _offersClickHandler(evt) {
-    const state = evt.target.checked;
-    const type = evt.target.name.slice(12);
+  _offersClickHandler() {
+    const newOffers = [];
+    this.getElement()
+      .querySelectorAll(`.event__offer-checkbox`)
+      .forEach((offer, index) => {
+        if (offer.checked) {
+          newOffers.push(this._availableOffers[index]);
+        }
+      });
 
-    if (state) {
-      const changedOffer = this._availableOffers.find((offer) => offer.title.includes(type));
-      this._data.offers.push(changedOffer);
-    } else {
-      const offerToRemove = this._data.offers.find((offer) => offer.title.includes(type));
-      const index = this._data.offers.indexOf(offerToRemove);
-      this._data.offers = [
-        ...this._data.offers.slice(0, index),
-        ...this._data.offers.slice(index + 1)
-      ];
-    }
-
-    this.updateData({offers: this._data.offers}, true);
+    this.updateData({offers: newOffers}, true);
   }
 
   _setDatePicker() {

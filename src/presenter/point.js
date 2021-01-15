@@ -16,12 +16,10 @@ export const State = {
 };
 
 class Point {
-  constructor(tripListContainer, changeData, changeMode, offersModel, destinationsModel) {
+  constructor(tripListContainer, changeData, changeMode) {
     this._tripListContainer = tripListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
-    this._offersModel = offersModel;
-    this._destinationsModel = destinationsModel;
 
     this._tripComponent = null;
     this._tripEditComponent = null;
@@ -42,7 +40,7 @@ class Point {
     const prevTripEditComponent = this._tripEditComponent;
 
     this._tripComponent = new TripPointView(this._tripCard);
-    this._tripEditComponent = new EditPointView(this._offersModel, this._destinationsModel, this._tripCard);
+    this._tripEditComponent = new EditPointView(this._tripCard);
 
     this._tripComponent.setEditClickHandler(this._handleEditClick);
     this._tripComponent.setFavouriteClickHandler(this._handleFavouriteClick);

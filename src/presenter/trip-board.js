@@ -10,11 +10,9 @@ import {SortType, UpdateType, UserAction} from "../const.js";
 import {filter} from "../utils/filter";
 
 class TripBoard {
-  constructor(pointsContainer, pointsModel, filterModel, offersModel, destinationsModel, api) {
+  constructor(pointsContainer, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
-    this._offersModel = offersModel;
-    this._destinationsModel = destinationsModel;
     this._tripPointsContainer = pointsContainer;
     this._api = api;
 
@@ -32,20 +30,21 @@ class TripBoard {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction, offersModel, destinationsModel);
+    this._newPointPresenter = new NewPointPresenter(this._tripListComponent, this._handleViewAction);
+  }
+
+  init() {
+    this._renderTripBoard();
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init() {
-    this._renderTripBoard();
-  }
-
   destroy() {
     this._clearTripBoard({resetSortType: true});
 
-    remove(this._tripListComponent);
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   createPoint(callback) {
@@ -96,9 +95,7 @@ class TripBoard {
   }
 
   _renderTripPoint(point) {
-    const tripPresenter = new TripPointPresenter(
-        this._tripListComponent, this._handleViewAction,
-        this._handleModeChange, this._offersModel, this._destinationsModel);
+    const tripPresenter = new TripPointPresenter(this._tripListComponent, this._handleViewAction, this._handleModeChange);
     tripPresenter.init(point);
     this._tripPresenter[point.id] = tripPresenter;
   }
@@ -189,6 +186,7 @@ class TripBoard {
       .forEach((presenter) => presenter.destroy());
     this._tripPresenter = {};
 
+    remove(this._tripListComponent);
     remove(this._sortingComponent);
     remove(this._emptyTripListComponent);
     remove(this._loadingComponent);

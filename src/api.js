@@ -1,4 +1,5 @@
 import PointsModel from "./model/points.js";
+import DataStorage from "./dataStorage.js";
 
 const Method = {
   GET: `GET`,
@@ -61,6 +62,20 @@ class Api {
       url: `points/${point.id}`,
       method: Method.DELETE
     });
+  }
+
+  getAllData() {
+    return Promise
+      .all([
+        this.getPoints(),
+        this.getOffers(),
+        this.getDestinations()
+      ])
+      .then(([points, offers, destinations]) => {
+        DataStorage.setOffers(offers);
+        DataStorage.setDestinations(destinations);
+        return points;
+      });
   }
 
   _load({
