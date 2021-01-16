@@ -1,6 +1,7 @@
 import TripInfoView from "../view/trip-info";
 import {remove, render, RenderPosition} from "../utils/render.js";
-import {defaultSortTripCardsByDate} from "../utils/trip.js";
+import {defaultSortPointsByDate} from "../utils/trip.js";
+import {UpdateType} from "../const";
 
 class Info {
   constructor(tripInfoMainContainer, pointsModel) {
@@ -23,12 +24,19 @@ class Info {
 
   _getSortedPoints() {
     const points = this._pointsModel.getPoints();
-    return points.sort(defaultSortTripCardsByDate);
+    return points.sort(defaultSortPointsByDate);
   }
 
-  _handleModelEvent() {
-    this._destroy();
-    this.init();
+  _handleModelEvent(updateType) {
+    switch (updateType) {
+      case UpdateType.INIT:
+        this.init();
+        break;
+      default:
+        this._destroy();
+        this.init();
+        break;
+    }
   }
 
   _destroy() {

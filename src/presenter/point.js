@@ -9,6 +9,12 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 class Point {
   constructor(tripListContainer, changeData, changeMode) {
     this._tripListContainer = tripListContainer;
@@ -52,7 +58,8 @@ class Point {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._tripEditComponent, prevTripEditComponent);
+      replace(this._tripComponent, prevTripEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevTripComponent);
@@ -67,6 +74,35 @@ class Point {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToCard();
+    }
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._tripEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._tripEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._tripEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._tripComponent.shake(resetFormState);
+        this._tripEditComponent.shake(resetFormState);
+        break;
     }
   }
 
@@ -103,7 +139,7 @@ class Point {
             {},
             this._tripCard,
             {
-              favourite: !this._tripCard.favourite
+              isFavourite: !this._tripCard.isFavourite
             }
         )
     );
@@ -119,7 +155,6 @@ class Point {
         isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         update
     );
-    this._replaceFormToCard();
   }
 
   _handleDeleteClick(point) {
