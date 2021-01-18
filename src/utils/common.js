@@ -5,4 +5,8 @@ const getRandomInt = (min = 0, max = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export {getRandomInt};
+const isOnline = () => {
+  return window.navigator.onLine;
+};
+
+export {getRandomInt, isOnline};
