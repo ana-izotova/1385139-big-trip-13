@@ -1,5 +1,4 @@
 import PointsModel from "../model/points.js";
-import DataStorage from "../dataStorage.js";
 
 const Method = {
   GET: `GET`,

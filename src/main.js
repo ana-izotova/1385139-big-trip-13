@@ -11,7 +11,6 @@ import {toast} from "./utils/toast/toast.js";
 import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
-import DataStorage from "./dataStorage";
 
 const AUTHORIZATION = `Basic thl7xk1e6ng3fpr`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
