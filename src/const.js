@@ -1,4 +1,5 @@
 const BAR_HEIGHT = 55;
+const OFFERS_TO_SHOW_IN_TRIP_LIST = 3;
 
 const SortType = {
   DEFAULT: `default`,
@@ -31,4 +32,4 @@ const MenuItem = {
   STATS: `stats`
 };
 
-export {SortType, UserAction, UpdateType, FilterType, MenuItem, BAR_HEIGHT};
+export {BAR_HEIGHT, OFFERS_TO_SHOW_IN_TRIP_LIST, SortType, UserAction, UpdateType, FilterType, MenuItem};

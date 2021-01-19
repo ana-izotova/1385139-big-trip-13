@@ -1,9 +1,11 @@
 import {getEventDuration, humanizeEventDuration} from "../utils/trip.js";
+import {OFFERS_TO_SHOW_IN_TRIP_LIST} from "../const.js";
 import AbstractView from "./abstract.js";
 
 const createTripPointTemplate = (tripCard) => {
   const {startDate, endDate, type, destination, offers, price, isFavourite} = tripCard;
   const eventDuration = getEventDuration(startDate, endDate);
+  const offersToShow = offers.slice(0, OFFERS_TO_SHOW_IN_TRIP_LIST);
 
   return `<li class="trip-events__item">
       <div class="event">
@@ -25,7 +27,7 @@ const createTripPointTemplate = (tripCard) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offers.map((offer) => {
+          ${offersToShow.map((offer) => {
     return `
       <li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
