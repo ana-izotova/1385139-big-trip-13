@@ -1,5 +1,4 @@
-import PointsModel from "./model/points.js";
-import DataStorage from "./dataStorage.js";
+import PointsModel from "../model/points.js";
 
 const Method = {
   GET: `GET`,
@@ -70,12 +69,17 @@ class Api {
         this.getPoints(),
         this.getOffers(),
         this.getDestinations()
-      ])
-      .then(([points, offers, destinations]) => {
-        DataStorage.setOffers(offers);
-        DataStorage.setDestinations(destinations);
-        return points;
-      });
+      ]);
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
   }
 
   _load({
