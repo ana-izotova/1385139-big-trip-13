@@ -28,19 +28,13 @@ class Abstract {
     this._element = null;
   }
 
-  show(className) {
-    this.getElement().classList.remove(className);
-  }
-
-  hide(className) {
-    this.getElement().classList.add(className);
-  }
-
   shake(callback) {
     this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
       this.getElement().style.animation = ``;
-      callback();
+      if (callback) {
+        callback();
+      }
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

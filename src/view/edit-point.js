@@ -120,7 +120,7 @@ const createEditFormPriceTemplate = (id, price, isDisabled) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}" required ${isDisabled ? `disabled` : ``}>`;
+          <input class="event__input  event__input--price" id="event-price-${id}" type="number" min="0" name="event-price" value="${price}" required ${isDisabled ? `disabled` : ``}>`;
 };
 
 const createEditFormOffersTemplate = (offers, availableOffers, id, isDisabled) => {
@@ -212,7 +212,7 @@ const createEditFormTemplate = (tripCard, availableOffers, allDestinations) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled || isSubmitDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${id === `new` ? `Cancel` : `${isDeleting ? `Deleting...` : `Delete`}`}</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -260,27 +260,8 @@ class EditPoint extends SmartView {
     this._setDatePicker();
   }
 
-  static parseTripCardToData(tripCard) {
-    return Object.assign(
-        {},
-        tripCard,
-        {
-          isSubmitDisabled: !tripCard.destination.name,
-          isDisabled: false,
-          isSaving: false,
-          isDeleting: false
-        }
-    );
-  }
-
-  static parseDataToTripCard(data) {
-    const newData = Object.assign({}, data);
-    delete newData.isSubmitDisabled;
-    delete newData.isDisabled;
-    delete newData.isSaving;
-    delete newData.isDeleting;
-
-    return newData;
+  getTemplate() {
+    return createEditFormTemplate(this._data, this._availableOffers, this._allDestinations);
   }
 
   removeElement() {
@@ -300,8 +281,33 @@ class EditPoint extends SmartView {
     );
   }
 
-  getTemplate() {
-    return createEditFormTemplate(this._data, this._availableOffers, this._allDestinations);
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement()
+      .querySelector(`form`)
+      .addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setEditFormCloseHandler(callback) {
+    this._callback.closeEditForm = callback;
+    this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._closeEditFormHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditFormCloseHandler(this._callback.closeEditForm);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this._setDatePicker();
   }
 
   _eventTypeSelectHandler(evt) {
@@ -429,14 +435,6 @@ class EditPoint extends SmartView {
     }
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setEditFormCloseHandler(this._callback.closeEditForm);
-    this.setDeleteClickHandler(this._callback.deleteClick);
-    this._setDatePicker();
-  }
-
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.event__type-group`)
@@ -446,7 +444,7 @@ class EditPoint extends SmartView {
       .addEventListener(`change`, this._destinationChangeHandler);
     this.getElement()
       .querySelector(`.event__input--price`)
-      .addEventListener(`input`, this._priceInputHandler);
+      .addEventListener(`change`, this._priceInputHandler);
 
     const availableOffers = this.getElement().querySelectorAll(`.event__available-offers input`);
     if (availableOffers) {
@@ -454,30 +452,32 @@ class EditPoint extends SmartView {
     }
   }
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement()
-      .querySelector(`form`)
-      .addEventListener(`submit`, this._formSubmitHandler);
-  }
-
-  setEditFormCloseHandler(callback) {
-    this._callback.closeEditForm = callback;
-    this.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._closeEditFormHandler);
-  }
-
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(EditPoint.parseDataToTripCard(this._data));
   }
 
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement()
-      .querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, this._formDeleteClickHandler);
+  static parseTripCardToData(tripCard) {
+    return Object.assign(
+        {},
+        tripCard,
+        {
+          isSubmitDisabled: !tripCard.destination.name,
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
+    );
+  }
+
+  static parseDataToTripCard(data) {
+    const newData = Object.assign({}, data);
+    delete newData.isSubmitDisabled;
+    delete newData.isDisabled;
+    delete newData.isSaving;
+    delete newData.isDeleting;
+
+    return newData;
   }
 }
 

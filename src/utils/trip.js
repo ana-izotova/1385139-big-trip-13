@@ -49,7 +49,7 @@ const getDurationDays = (diffInMs) => {
   const days = timeDuration.days();
   const hours = timeDuration.hours();
 
-  return (days > 0 ? `${addZeroToNumber(days)}D` : `${addZeroToNumber(hours)}H`);
+  return (days > 0 ? `${addZeroToNumber(days)}D ${addZeroToNumber(hours)}H` : `${addZeroToNumber(hours)}H`);
 };
 
 const defaultSortPointsByDate = (point1, point2) => point1.startDate.diff(point2.startDate);

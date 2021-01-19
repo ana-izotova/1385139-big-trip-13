@@ -1,12 +1,10 @@
 import MenuView from "../view/menu.js";
 import {render, RenderPosition} from "../utils/render.js";
-import {MenuItem} from "../const";
+import {MenuItem} from "../const.js";
 
 class Menu {
-  constructor(menuContainer, pointsModel, filterModel) {
+  constructor(menuContainer) {
     this._menuContainer = menuContainer;
-    this._pointsModel = pointsModel;
-    this._filterModel = filterModel;
 
     this._menuComponent = null;
 

@@ -34,6 +34,15 @@ class Api {
       .then(Api.toJSON);
   }
 
+  getAllData() {
+    return Promise
+      .all([
+        this.getPoints(),
+        this.getOffers(),
+        this.getDestinations()
+      ]);
+  }
+
   updatePoint(point) {
     return this._load({
       url: `points/${point.id}`,
@@ -61,15 +70,6 @@ class Api {
       url: `points/${point.id}`,
       method: Method.DELETE
     });
-  }
-
-  getAllData() {
-    return Promise
-      .all([
-        this.getPoints(),
-        this.getOffers(),
-        this.getDestinations()
-      ]);
   }
 
   sync(data) {

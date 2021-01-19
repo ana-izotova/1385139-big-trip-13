@@ -1,3 +1,5 @@
+const BAR_HEIGHT = 55;
+
 const SortType = {
   DEFAULT: `default`,
   PRICE: `price`,
@@ -28,7 +30,5 @@ const MenuItem = {
   TABLE: `table`,
   STATS: `stats`
 };
-
-const BAR_HEIGHT = 55;
 
 export {SortType, UserAction, UpdateType, FilterType, MenuItem, BAR_HEIGHT};

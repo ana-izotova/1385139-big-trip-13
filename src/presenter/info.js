@@ -1,7 +1,7 @@
-import TripInfoView from "../view/trip-info";
+import TripInfoView from "../view/trip-info.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {defaultSortPointsByDate} from "../utils/trip.js";
-import {UpdateType} from "../const";
+import {UpdateType} from "../const.js";
 
 class Info {
   constructor(tripInfoMainContainer, pointsModel) {
