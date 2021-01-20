@@ -29,6 +29,8 @@ const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
 const pageBodyContainer = pageMain.querySelector(`.page-body__container`);
 
+const addNewEventButton = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
+
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
@@ -44,16 +46,15 @@ const handleMenuClick = (menuItem) => {
   }
 };
 
-const handleNewPointFormClose = () => {
-  addNewEventButton.disabled = false;
-  addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
-};
-
 const handleNewPointFormOpen = (evt) => {
   evt.preventDefault();
-
   menuPresenter.setActiveMenuItemToDefault();
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+  if (!isOnline()) {
+    toast(`You can't create new point offline`);
+    return;
+  }
 
   if (document.querySelector(`.statistics`)) {
     statsPresenter.destroy();
@@ -61,25 +62,25 @@ const handleNewPointFormOpen = (evt) => {
     tripBoardPresenter.init();
   }
 
-  if (!isOnline()) {
-    toast(`You can't create new point offline`);
-    return;
-  }
-
   tripBoardPresenter.createPoint(handleNewPointFormClose);
   addNewEventButton.disabled = true;
   addNewEventButton.removeEventListener(`click`, handleNewPointFormOpen);
+};
+
+const handleNewPointFormClose = () => {
+  addNewEventButton.disabled = false;
+  addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
 };
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const pointsStore = new Store(POINTS_STORE_NAME, window.localStorage);
 const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
 const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
+
 const apiWithProvider = new Provider(api, pointsStore, offersStore, destinationsStore);
-
 const pointsModel = new PointsModel();
-const filterModel = new FilterModel();
 
+const filterModel = new FilterModel();
 const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel, apiWithProvider);
 const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
 const menuPresenter = new MenuPresenter(tripControlsContainer);
@@ -103,7 +104,6 @@ apiWithProvider.getAllData()
 tripBoardPresenter.init();
 tripInfoPresenter.init();
 
-const addNewEventButton = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
 addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
 
 window.addEventListener(`load`, () => {
