@@ -139,8 +139,7 @@ class TripBoard {
           .then((response) => {
             this._pointsModel.addPoint(updateType, response);
           })
-          .catch((e) => {
-            console.log(e)
+          .catch(() => {
             this._newPointPresenter.setAborting();
           });
         break;
