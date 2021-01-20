@@ -35,6 +35,16 @@ class Menu extends AbstractView {
     menuTabs.forEach((tab) => tab.addEventListener(`click`, this._menuClickHandler));
   }
 
+  disableMenuItem(menuItem) {
+    this.getElement().querySelector(`[data-menu-item="${menuItem}"]`).classList.add(`menu-item--disabled`);
+  }
+
+  removeDisable() {
+    this.getElement()
+      .querySelectorAll(`.menu-item--disabled`)
+      .forEach((item) => item.classList.remove(`menu-item--disabled`));
+  }
+
   _menuClickHandler(evt) {
     if (evt.target.classList.contains(`trip-tabs__btn--active`)) {
       return;

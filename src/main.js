@@ -12,7 +12,7 @@ import {MenuItem, UpdateType, FilterType} from "./const.js";
 import {isOnline} from "./utils/common.js";
 import {toast} from "./utils/toast/toast.js";
 
-const AUTHORIZATION = `Basic thl7xk1e6ng3fp2342`;
+const AUTHORIZATION = `Basic thl7xk1e6ng3fp234`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const POINTS_STORE_PREFIX = `big-trip-cache-points`;
 const OFFERS_STORE_PREFIX = `big-trip-cache-offers`;
@@ -48,12 +48,16 @@ const handleMenuClick = (menuItem) => {
 
 const handleNewPointFormOpen = (evt) => {
   evt.preventDefault();
-  menuPresenter.setActiveMenuItemToDefault();
-  filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
   if (!isOnline()) {
     toast(`You can't create new point offline`);
     return;
+  }
+
+  menuPresenter.setActiveMenuItemToDefault();
+
+  if (filterModel.getFilter() !== FilterType.EVERYTHING) {
+    filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   }
 
   if (document.querySelector(`.statistics`)) {
@@ -83,7 +87,7 @@ const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
 const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel, apiWithProvider);
 const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
-const menuPresenter = new MenuPresenter(tripControlsContainer);
+const menuPresenter = new MenuPresenter(tripControlsContainer, pointsModel);
 const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, pointsModel);
 const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
 
