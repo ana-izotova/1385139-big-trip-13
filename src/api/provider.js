@@ -1,6 +1,6 @@
 import PointsModel from "../model/points.js";
+import DataStorage from "../dataStorage.js";
 import {isOnline} from "../utils/common.js";
-import DataStorage from "../dataStorage";
 
 const getSyncedPoints = (items) => {
   return items.filter(({success}) => success)

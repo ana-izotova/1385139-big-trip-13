@@ -2,16 +2,16 @@ import TripPointView from "../view/trip-point.js";
 import EditPointView from "../view/edit-point.js";
 import {remove, render, RenderPosition, replace} from "../utils/render.js";
 import {isDatesEqual} from "../utils/trip.js";
-import {UserAction, UpdateType} from "../const.js";
-import {isOnline} from "../utils/common";
-import {toast} from "../utils/toast/toast";
+import {UserAction, UpdateType, EscKeyEvent} from "../const.js";
+import {isOnline} from "../utils/common.js";
+import {toast} from "../utils/toast/toast.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
 };
 
-export const State = {
+const State = {
   SAVING: `SAVING`,
   DELETING: `DELETING`,
   ABORTING: `ABORTING`
@@ -42,7 +42,7 @@ class Point {
     const prevTripEditComponent = this._tripEditComponent;
 
     this._tripComponent = new TripPointView(this._tripCard);
-    this._tripEditComponent = new EditPointView(this._tripCard);
+    this._tripEditComponent = new EditPointView(this._tripCard, false);
 
     this._tripComponent.setEditClickHandler(this._handleEditClick);
     this._tripComponent.setFavouriteClickHandler(this._handleFavouriteClick);
@@ -71,12 +71,6 @@ class Point {
   destroy() {
     remove(this._tripComponent);
     remove(this._tripEditComponent);
-  }
-
-  resetView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceFormToCard();
-    }
   }
 
   setViewState(state) {
@@ -108,6 +102,13 @@ class Point {
     }
   }
 
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._tripEditComponent.reset(this._tripCard);
+      this._replaceFormToCard();
+    }
+  }
+
   _replaceTripToForm() {
     replace(this._tripEditComponent, this._tripComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -122,7 +123,7 @@ class Point {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
+    if (evt.key === EscKeyEvent.ESCAPE || evt.key === EscKeyEvent.ESC) {
       evt.preventDefault();
       this._tripEditComponent.reset(this._tripCard);
       this._replaceFormToCard();
@@ -132,6 +133,7 @@ class Point {
   _handleEditClick() {
     if (!isOnline()) {
       toast(`You can't edit point offline`);
+      this._tripComponent.shake();
       return;
     }
 
@@ -155,12 +157,14 @@ class Point {
   _handleFormSubmit(update) {
     if (!isOnline()) {
       toast(`You can't save point offline`);
+      this._tripEditComponent.shake();
       return;
     }
 
     const isMinorUpdate =
       !isDatesEqual(this._tripCard.startDate, update.startDate) ||
-      !isDatesEqual(this._tripCard.endDate, update.endDate);
+      !isDatesEqual(this._tripCard.endDate, update.endDate) ||
+      this._tripCard.price !== update.price;
 
     this._changeData(
         UserAction.UPDATE_POINT,
@@ -172,6 +176,7 @@ class Point {
   _handleDeleteClick(point) {
     if (!isOnline()) {
       toast(`You can't delete point offline`);
+      this._tripEditComponent.shake();
       return;
     }
 
@@ -189,3 +194,4 @@ class Point {
 }
 
 export default Point;
+export {State};

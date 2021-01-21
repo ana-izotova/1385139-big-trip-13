@@ -1,5 +1,5 @@
 import StatsView from "../view/stats.js";
-import {render, remove, RenderPosition} from "../utils/render";
+import {render, remove, RenderPosition} from "../utils/render.js";
 
 class Stats {
   constructor(statsContainer, pointsModel) {

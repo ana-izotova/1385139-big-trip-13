@@ -1,6 +1,6 @@
 import EditPointView from "../view/edit-point.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, EscKeyEvent} from "../const.js";
 
 class NewPoint {
   constructor(tripListContainer, changeData) {
@@ -32,21 +32,6 @@ class NewPoint {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  destroy() {
-    if (this._tripEditComponent === null) {
-      return;
-    }
-
-    if (this._destroyCallback !== null) {
-      this._destroyCallback();
-    }
-
-    remove(this._tripEditComponent);
-    this._tripEditComponent = null;
-
-    document.removeEventListener(`keydown`, this._escKeyDownHandler);
-  }
-
   setSaving() {
     this._tripEditComponent.updateData({
       isDisabled: true,
@@ -66,6 +51,21 @@ class NewPoint {
     this._tripEditComponent.shake(resetFormState);
   }
 
+  destroy() {
+    if (this._tripEditComponent === null) {
+      return;
+    }
+
+    if (this._destroyCallback !== null) {
+      this._destroyCallback();
+    }
+
+    remove(this._tripEditComponent);
+    this._tripEditComponent = null;
+
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
+  }
+
   _handleFormSubmit(point) {
     this._changeData(
         UserAction.ADD_POINT,
@@ -78,15 +78,15 @@ class NewPoint {
     this.destroy();
   }
 
+  _handleCloseFormClick() {
+    this.destroy();
+  }
+
   _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
+    if (evt.key === EscKeyEvent.ESCAPE || evt.key === EscKeyEvent.ESC) {
       evt.preventDefault();
       this.destroy();
     }
-  }
-
-  _handleCloseFormClick() {
-    this.destroy();
   }
 }
 

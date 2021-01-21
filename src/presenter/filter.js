@@ -1,11 +1,13 @@
 import FilterView from "../view/filter.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
-import {UpdateType} from "../const.js";
+import {FilterType, UpdateType} from "../const.js";
+import {filter} from "../utils/filter.js";
 
 class Filter {
-  constructor(filterContainer, filterModel) {
+  constructor(filterContainer, filterModel, pointsModel) {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
+    this._pointsModel = pointsModel;
     this._currentFilter = null;
 
     this._filterComponent = null;
@@ -14,6 +16,7 @@ class Filter {
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
 
     this._filterModel.addObserver(this._handleModelEvent);
+    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -34,6 +37,28 @@ class Filter {
     remove(prevFilterComponent);
   }
 
+  _getFilters() {
+    const points = this._pointsModel.getPoints();
+
+    return [
+      {
+        type: `everything`,
+        name: `Everything`,
+        amount: filter[FilterType.EVERYTHING](points).length
+      },
+      {
+        type: `future`,
+        name: `Future`,
+        amount: filter[FilterType.FUTURE](points).length
+      },
+      {
+        type: `past`,
+        name: `Past`,
+        amount: filter[FilterType.PAST](points).length
+      }
+    ];
+  }
+
   _handleModelEvent() {
     this.init();
   }
@@ -44,23 +69,6 @@ class Filter {
     }
 
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
-  }
-
-  _getFilters() {
-    return [
-      {
-        type: `everything`,
-        name: `Everything`
-      },
-      {
-        type: `future`,
-        name: `Future`
-      },
-      {
-        type: `past`,
-        name: `Past`
-      }
-    ];
   }
 }
 

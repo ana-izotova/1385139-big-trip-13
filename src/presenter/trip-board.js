@@ -48,6 +48,11 @@ class TripBoard {
   }
 
   createPoint(callback) {
+    if (this._pointsModel.getPoints().length === 0) {
+      remove(this._emptyTripListComponent);
+      this._renderSort();
+      this._renderTripList();
+    }
     this._newPointPresenter.init(callback);
   }
 

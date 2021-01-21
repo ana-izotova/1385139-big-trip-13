@@ -1,7 +1,7 @@
 import AbstractView from "./abstract.js";
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
-  const {type, name} = filter;
+  const {type, name, amount} = filter;
 
   return (
     `<div class="trip-filters__filter">
@@ -12,6 +12,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
         name="trip-filter"
         value="${type}"
         ${type === currentFilterType ? `checked` : ``}
+        ${amount === 0 ? `disabled` : ``}
        >
        <label
           class="trip-filters__filter-label"
@@ -49,16 +50,16 @@ class Filter extends AbstractView {
     return createFilterTemplate(this._filters, this._currentFilter);
   }
 
-  _filterTypeChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value);
-  }
-
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
     this.getElement()
       .querySelector(`.trip-filters`)
       .addEventListener(`change`, this._filterTypeChangeHandler);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
   }
 }
 

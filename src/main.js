@@ -2,17 +2,17 @@ import TripBoardPresenter from "./presenter/trip-board.js";
 import TripInfoPresenter from "./presenter/info.js";
 import FilterPresenter from "./presenter/filter.js";
 import MenuPresenter from "./presenter/menu.js";
+import StatsPresenter from "./presenter/stats.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
-import StatsPresenter from "./presenter/stats.js";
-import {MenuItem, UpdateType, FilterType} from "./const.js";
-import {isOnline} from "./utils/common.js";
-import {toast} from "./utils/toast/toast.js";
 import Api from "./api/api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
+import {isOnline} from "./utils/common.js";
+import {toast} from "./utils/toast/toast.js";
 
-const AUTHORIZATION = `Basic thl7xk1e6ng3fpr`;
+const AUTHORIZATION = `Basic thl7xk1e6ng3fp2340`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const POINTS_STORE_PREFIX = `big-trip-cache-points`;
 const OFFERS_STORE_PREFIX = `big-trip-cache-offers`;
@@ -29,37 +29,7 @@ const pageMain = document.querySelector(`.page-body__page-main`);
 const tripEventsContainer = pageMain.querySelector(`.trip-events`);
 const pageBodyContainer = pageMain.querySelector(`.page-body__container`);
 
-const api = new Api(END_POINT, AUTHORIZATION);
-const pointsStore = new Store(POINTS_STORE_NAME, window.localStorage);
-const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
-const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
-const apiWithProvider = new Provider(api, pointsStore, offersStore, destinationsStore);
-
-const pointsModel = new PointsModel();
-const filterModel = new FilterModel();
-
-const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel, apiWithProvider);
-const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
-const menuPresenter = new MenuPresenter(tripControlsContainer);
-const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel);
-const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
-
-apiWithProvider.getAllData()
-  .then((points) => {
-    pointsModel.setPoints(UpdateType.INIT, points);
-    menuPresenter.init();
-    filterPresenter.init();
-    menuPresenter.setMenuClickHandler(handleMenuClick);
-  })
-  .catch((err) => {
-    console.log(err);
-    pointsModel.setPoints(UpdateType.INIT, []);
-    menuPresenter.init();
-    filterPresenter.init();
-    menuPresenter.setMenuClickHandler(handleMenuClick);
-
-  });
-
+const addNewEventButton = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
 
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -76,19 +46,19 @@ const handleMenuClick = (menuItem) => {
   }
 };
 
-tripBoardPresenter.init();
-tripInfoPresenter.init();
-
-const handleNewPointFormClose = () => {
-  addNewEventButton.disabled = false;
-  addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
-};
-
 const handleNewPointFormOpen = (evt) => {
   evt.preventDefault();
 
+  if (!isOnline()) {
+    toast(`You can't create new point offline`);
+    return;
+  }
+
   menuPresenter.setActiveMenuItemToDefault();
-  filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+  if (filterModel.getFilter() !== FilterType.EVERYTHING) {
+    filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+  }
 
   if (document.querySelector(`.statistics`)) {
     statsPresenter.destroy();
@@ -96,17 +66,48 @@ const handleNewPointFormOpen = (evt) => {
     tripBoardPresenter.init();
   }
 
-  if (!isOnline()) {
-    toast(`You can't create new point offline`);
-    return;
-  }
-
   tripBoardPresenter.createPoint(handleNewPointFormClose);
   addNewEventButton.disabled = true;
   addNewEventButton.removeEventListener(`click`, handleNewPointFormOpen);
 };
 
-const addNewEventButton = tripMainContainer.querySelector(`.trip-main__event-add-btn`);
+const handleNewPointFormClose = () => {
+  addNewEventButton.disabled = false;
+  addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
+};
+
+const api = new Api(END_POINT, AUTHORIZATION);
+const pointsStore = new Store(POINTS_STORE_NAME, window.localStorage);
+const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
+const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
+
+const apiWithProvider = new Provider(api, pointsStore, offersStore, destinationsStore);
+const pointsModel = new PointsModel();
+
+const filterModel = new FilterModel();
+const tripBoardPresenter = new TripBoardPresenter(tripEventsContainer, pointsModel, filterModel, apiWithProvider);
+const tripInfoPresenter = new TripInfoPresenter(tripMainContainer, pointsModel);
+const menuPresenter = new MenuPresenter(tripControlsContainer, pointsModel);
+const filterPresenter = new FilterPresenter(tripControlsContainer, filterModel, pointsModel);
+const statsPresenter = new StatsPresenter(pageBodyContainer, pointsModel);
+
+apiWithProvider.getAllData()
+  .then((points) => {
+    pointsModel.setPoints(UpdateType.INIT, points);
+    menuPresenter.init();
+    filterPresenter.init();
+    menuPresenter.setMenuClickHandler(handleMenuClick);
+  })
+  .catch(() => {
+    pointsModel.setPoints(UpdateType.INIT, []);
+    menuPresenter.init();
+    filterPresenter.init();
+    menuPresenter.setMenuClickHandler(handleMenuClick);
+  });
+
+tripBoardPresenter.init();
+tripInfoPresenter.init();
+
 addNewEventButton.addEventListener(`click`, handleNewPointFormOpen);
 
 window.addEventListener(`load`, () => {
@@ -121,3 +122,7 @@ window.addEventListener(`online`, () => {
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
 });
+
+if (!isOnline()) {
+  toast(`You are offline`);
+}
