@@ -7,8 +7,8 @@ import {getEventDuration, getAvailableOffers} from "../utils/trip.js";
 
 const emptyCard = {
   type: `taxi`,
-  startDate: dayjs(),
-  endDate: dayjs(),
+  startDate: dayjs().add(1, `hour`),
+  endDate: dayjs().add(4, `hour`),
   offers: [],
   destination: {
     name: ``,
@@ -390,6 +390,7 @@ class EditPoint extends SmartView {
             {},
             flatpickrBasicSetup,
             {
+              minDate: this._isNewPoint ? Date.now() : ``,
               defaultDate: this._data.startDate.toDate(),
               onChange: this._startDateChangeHandler
             }

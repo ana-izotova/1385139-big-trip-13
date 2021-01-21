@@ -12,7 +12,7 @@ import {MenuItem, UpdateType, FilterType} from "./const.js";
 import {isOnline} from "./utils/common.js";
 import {toast} from "./utils/toast/toast.js";
 
-const AUTHORIZATION = `Basic thl7xk1e6ng3fp2340`;
+const AUTHORIZATION = `Basic thl7xk1e6ng3fp2377`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const POINTS_STORE_PREFIX = `big-trip-cache-points`;
 const OFFERS_STORE_PREFIX = `big-trip-cache-offers`;
