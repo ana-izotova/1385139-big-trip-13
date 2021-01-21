@@ -181,9 +181,9 @@ const createEditFormDestinationInfoTemplate = (destination) => {
   }`;
 };
 
-const createEditFormTemplate = (tripCard, availableOffers, allDestinations) => {
+const createEditFormTemplate = (tripCard, availableOffers, allDestinations, isNewPoint) => {
   const {type, startDate, endDate, destination, offers, price, isDisabled, isSaving, isDeleting, isSubmitDisabled} = tripCard;
-  const id = typeof tripCard.id !== `undefined` ? tripCard.id : `new`;
+  const id = isNewPoint ? `new` : tripCard.id;
 
   const typeTemplate = createEditFormTypeTemplate(type, id, isDisabled);
   const destinationTemplate = createEditFormDestinationTemplate(type, id, destination, allDestinations, isDisabled);
@@ -212,10 +212,10 @@ const createEditFormTemplate = (tripCard, availableOffers, allDestinations) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled || isSubmitDisabled ? `disabled` : ``}>${isSaving ? `Saving...` : `Save`}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${id === `new` ? `Cancel` : `${isDeleting ? `Deleting...` : `Delete`}`}</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isNewPoint ? `Cancel` : `${isDeleting ? `Deleting...` : `Delete`}`}</button>
+        ${isNewPoint ? `` : `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
-        </button>
+        </button>`}
       </header>
       <section class="event__details">
         ${offersTemplate}
@@ -236,13 +236,14 @@ const flatpickrBasicSetup = {
 };
 
 class EditPoint extends SmartView {
-  constructor(tripCard = emptyCard) {
+  constructor(tripCard = emptyCard, isNewPoint = true) {
     super();
     this._allDestinations = DataStorage.getDestinations();
     this._allOffers = DataStorage.getOffers();
     this._availableOffers = getAvailableOffers(this._allOffers, tripCard.type);
 
     this._data = EditPoint.parseTripCardToData(tripCard, this._availableOffers);
+    this._isNewPoint = isNewPoint;
     this._datepickerStartDate = null;
     this._datepickerEndDate = null;
 
@@ -261,7 +262,42 @@ class EditPoint extends SmartView {
   }
 
   getTemplate() {
-    return createEditFormTemplate(this._data, this._availableOffers, this._allDestinations);
+    return createEditFormTemplate(this._data, this._availableOffers, this._allDestinations, this._isNewPoint);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement()
+      .querySelector(`form`)
+      .addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  setEditFormCloseHandler(callback) {
+    this._callback.closeEditForm = callback;
+
+    if (!this._isNewPoint) {
+      this.getElement()
+        .querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, this._closeEditFormHandler);
+    }
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this._setDatePicker();
+
+    if (!this._isNewPoint) {
+      this.setEditFormCloseHandler(this._callback.closeEditForm);
+    }
   }
 
   removeElement() {
@@ -279,35 +315,6 @@ class EditPoint extends SmartView {
     this.updateData(
         EditPoint.parseTripCardToData(tripCard)
     );
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement()
-      .querySelector(`form`)
-      .addEventListener(`submit`, this._formSubmitHandler);
-  }
-
-  setEditFormCloseHandler(callback) {
-    this._callback.closeEditForm = callback;
-    this.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, this._closeEditFormHandler);
-  }
-
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement()
-      .querySelector(`.event__reset-btn`)
-      .addEventListener(`click`, this._formDeleteClickHandler);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setEditFormCloseHandler(this._callback.closeEditForm);
-    this.setDeleteClickHandler(this._callback.deleteClick);
-    this._setDatePicker();
   }
 
   _eventTypeSelectHandler(evt) {
@@ -412,11 +419,12 @@ class EditPoint extends SmartView {
       this.updateData({
         isSubmitDisabled: true
       });
-    } else {
-      this.updateData({
-        isSubmitDisabled: false
-      });
+      return;
     }
+
+    this.updateData({
+      isSubmitDisabled: false
+    });
   }
 
   _endDateChangeHandler([userDate]) {
@@ -428,11 +436,12 @@ class EditPoint extends SmartView {
       this.updateData({
         isSubmitDisabled: true
       });
-    } else {
-      this.updateData({
-        isSubmitDisabled: false
-      });
+      return;
     }
+
+    this.updateData({
+      isSubmitDisabled: false
+    });
   }
 
   _setInnerHandlers() {

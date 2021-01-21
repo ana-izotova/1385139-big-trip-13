@@ -42,9 +42,10 @@ class Menu {
   _checkDisable() {
     if (this._pointsCount === 0) {
       this._menuComponent.disableMenuItem(MenuItem.STATS);
-    } else {
-      this._menuComponent.removeDisable();
+      return;
     }
+
+    this._menuComponent.removeDisable();
   }
 
   _destroy() {

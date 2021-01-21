@@ -30,7 +30,6 @@ const createSortingTemplate = (currentSortType) => {
           </form>`;
 };
 
-
 class Sort extends AbstractView {
   constructor(currentSortType) {
     super();

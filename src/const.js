@@ -1,6 +1,11 @@
 const BAR_HEIGHT = 55;
 const OFFERS_TO_SHOW_IN_TRIP_LIST = 3;
 
+const EscKeyEvent = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`
+};
+
 const SortType = {
   DEFAULT: `default`,
   PRICE: `price`,
@@ -32,4 +37,4 @@ const MenuItem = {
   STATS: `stats`
 };
 
-export {BAR_HEIGHT, OFFERS_TO_SHOW_IN_TRIP_LIST, SortType, UserAction, UpdateType, FilterType, MenuItem};
+export {BAR_HEIGHT, OFFERS_TO_SHOW_IN_TRIP_LIST, EscKeyEvent, SortType, UserAction, UpdateType, FilterType, MenuItem};
