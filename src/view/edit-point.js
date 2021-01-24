@@ -228,8 +228,6 @@ const createEditFormTemplate = (tripCard, availableOffers, allDestinations, isNe
 
 const flatpickrBasicSetup = {
   enableTime: true,
-  // eslint-disable-next-line camelcase
-  time_24hr: true,
   altInput: true,
   altFormat: `d/m/y H:i`,
   dateFormat: `Y-m-d`
